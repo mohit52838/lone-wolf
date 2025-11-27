@@ -145,8 +145,6 @@ const Home = () => {
         // 4. Scroll Reveal Animations
         const sections = [
             '.highlights-section',
-            '.features-strip',
-            '.big-feature-section',
             '.chapters-preview',
             '.cta-section'
         ];
@@ -260,50 +258,7 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* 3. FEATURES STRIP (Icons) */}
-            <section className="features-strip">
-                <div className="strip-item">
-                    <FaLeaf className="strip-icon" />
-                    <span>Natural Wellness</span>
-                </div>
-                <div className="strip-item">
-                    <FaUsers className="strip-icon" />
-                    <span>Community Support</span>
-                </div>
-                <div className="strip-item">
-                    <FaStethoscope className="strip-icon" />
-                    <span>Expert Advice</span>
-                </div>
-                <div className="strip-item">
-                    <FaHeartbeat className="strip-icon" />
-                    <span>Holistic Care</span>
-                </div>
-            </section>
-
-            {/* 4. BIG FEATURED SECTION (Split Layout) */}
-            <section className="big-feature-section">
-                <div className="big-feature-content">
-                    <h2 className="big-title">Your Health, <br /> <span className="text-gradient">Reimagined.</span></h2>
-                    <p className="big-desc">
-                        Access a library of resources designed to help you understand your body better.
-                        From menstrual tracking to mental health support, we're here for you every step of the way.
-                    </p>
-                    <Link to="/resources" className="btn-primary btn-tilt">Explore Resources</Link>
-                </div>
-                <div className="big-feature-visual">
-                    <div className="visual-circle"></div>
-                    <div className="visual-card">
-                        <div className="visual-icon"><FaHeartbeat /></div>
-                        <span>Daily Tracking</span>
-                    </div>
-                    <div className="visual-card card-2">
-                        <div className="visual-icon"><FaBookOpen /></div>
-                        <span>Expert Guides</span>
-                    </div>
-                </div>
-            </section>
-
-            {/* 5. CHAPTERS SLIDER (More Cards) */}
+            {/* 3. CHAPTERS SLIDER (More Cards) */}
             <section className="chapters-preview">
                 <div className="chapters-header">
                     <h2 className="section-title">Latest Chapters</h2>
@@ -423,102 +378,6 @@ const Home = () => {
         .feature-card { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
         .card-icon { font-size: 3rem; color: var(--accent-cyan); margin-top: 2rem; opacity: 0.2; align-self: flex-end; }
 
-        /* FEATURES STRIP */
-        .features-strip {
-            display: flex;
-            justify-content: space-around;
-            padding: 60px 5%;
-            background: white;
-            border-top: 1px solid var(--glass-border);
-            border-bottom: 1px solid var(--glass-border);
-            margin: 50px 0;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .strip-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-        .strip-icon {
-            font-size: 1.5rem;
-            color: var(--primary-pink);
-        }
-
-        /* BIG FEATURE SECTION */
-        .big-feature-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            padding: 120px 10%;
-            align-items: center;
-            background: linear-gradient(135deg, #fff5f7 0%, #fff 100%);
-        }
-        .big-title {
-            font-size: 3.5rem;
-            font-family: var(--font-header);
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            color: var(--text-color);
-        }
-        .big-desc {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #64748b;
-            margin-bottom: 2.5rem;
-        }
-        .big-feature-visual {
-            position: relative;
-            height: 500px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .visual-circle {
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
-            opacity: 0.1;
-            position: absolute;
-        }
-        .visual-card {
-            position: absolute;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-weight: 600;
-            border: 1px solid var(--glass-border);
-            animation: float 6s ease-in-out infinite;
-        }
-        .visual-card.card-2 {
-            top: 20%;
-            right: 10%;
-            animation-delay: -3s;
-        }
-        .visual-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-pink);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
         /* CHAPTERS SLIDER */
         .chapters-preview { height: 100vh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; background: #fff; position: relative; }
         .chapters-header { padding: 0 5%; margin-bottom: 50px; z-index: 2; }
@@ -540,9 +399,6 @@ const Home = () => {
           .chapters-slider { flex-direction: column; width: 100%; padding: 0 20px; }
           .chapter-slide { width: 100%; height: auto; }
           .ui-circle { width: 300px; height: 300px; }
-          .big-feature-section { grid-template-columns: 1fr; padding: 80px 5%; gap: 40px; text-align: center; }
-          .big-feature-visual { height: 300px; }
-          .features-strip { flex-direction: column; align-items: center; gap: 30px; }
         }
       `}</style>
         </div>
