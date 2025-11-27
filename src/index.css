@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  /* HerHealth Theme Mapped to Template Variables */
+  --bg-color: #fff5f7;
+  /* Soft Pink White */
+  --accent-blue: #ec407a;
+  /* Brand Primary Pink */
+  --accent-cyan: #f472b6;
+  /* Light Pink */
+  --accent-purple: #c084fc;
+  /* Soft Purple */
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(236, 64, 122, 0.15);
+
+  --text-color: #334155;
+  /* Slate 700 */
+
+  --font-header: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Soft Glow instead of Neon */
+  --neon-glow: 0 10px 30px -10px rgba(236, 64, 122, 0.3);
+  --tron-grid-color: rgba(236, 64, 122, 0.05);
+}
+
+@theme {
+  --color-brand-primary: #ec407a;
+  --color-brand-secondary: #f48fb1;
+  --color-brand-accent: #fce4ec;
+  --font-display: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Utility Classes for Template Compatibility */
+.neon-text-blue {
+  color: var(--accent-blue);
+  /* Removed text-shadow for cleaner look */
+}
+
+.neon-text-cyan {
+  color: var(--accent-cyan);
+}
+
+.neon-text-purple {
+  color: var(--accent-purple);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-blue);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-cyan);
+}

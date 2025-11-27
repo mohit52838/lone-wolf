@@ -1,0 +1,30 @@
+{
+    "added": [],
+    "replaced": [
+        {
+            "original": "SAMPLE032",
+            "new": "p4vWc6v7Tj4"
+        },
+        {
+            "original": "SAMPLE033",
+            "new": "kS5gVvLzJ1o"
+        },
+        {
+            "original": "SAMPLE036",
+            "new": "t20iL40b3k0"
+        }
+    ],
+    "removed": [
+        "SAMPLE031",
+        "SAMPLE034",
+        "SAMPLE035",
+        "SAMPLE037",
+        "SAMPLE038",
+        "SAMPLE039",
+        "SAMPLE040"
+    ],
+    "embedBlocked": [
+        "gqFOi9bQJ9c"
+    ],
+    "total_final_count": 55
+}
