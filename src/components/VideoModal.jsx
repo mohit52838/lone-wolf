@@ -1,18 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import { FaTimes, FaExternalLinkAlt, FaShareAlt, FaExclamationTriangle } from 'react-icons/fa';
+import React, { useEffect } from 'react';
+import { FaTimes } from 'react-icons/fa';
 
 const VideoModal = ({ video, onClose }) => {
-    const modalRef = useRef(null);
-
-    // Close on escape key
     useEffect(() => {
         const handleEsc = (e) => {
             if (e.key === 'Escape') onClose();
         };
         window.addEventListener('keydown', handleEsc);
-
-        // Lock body scroll
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
 
         return () => {
             window.removeEventListener('keydown', handleEsc);
@@ -22,108 +17,47 @@ const VideoModal = ({ video, onClose }) => {
 
     if (!video) return null;
 
-    const handleShare = () => {
-        if (navigator.share) {
-            navigator.share({
-                title: video.title,
-                text: `Check out this video on HerHealth: ${video.title}`,
-                url: window.location.href,
-            }).catch(console.error);
-        } else {
-            navigator.clipboard.writeText(video.sourceUrl);
-            alert('Link copied to clipboard!');
-        }
-    };
-
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+        <div
+            className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
+            onClick={onClose}
+        >
             <div
-                ref={modalRef}
-                className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="modal-title"
+                className="relative w-full max-w-4xl bg-black rounded-2xl overflow-hidden shadow-2xl transform transition-all scale-100"
+                onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white z-10">
-                    <h2 id="modal-title" className="font-bold text-gray-800 text-lg line-clamp-1 pr-4">
-                        {video.title}
-                    </h2>
+                <div className="flex justify-between items-center p-4 bg-gradient-to-r from-pink-900/20 to-transparent absolute top-0 left-0 right-0 z-10 pointer-events-none">
+                    <h3 className="text-white font-bold text-lg drop-shadow-md opacity-0">Playing Video</h3>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-800"
+                        className="pointer-events-auto bg-black/50 hover:bg-pink-600 text-white p-2 rounded-full transition-all duration-300 backdrop-blur-md group"
                         aria-label="Close modal"
                     >
-                        <FaTimes size={20} />
+                        <FaTimes className="text-xl group-hover:rotate-90 transition-transform" />
                     </button>
                 </div>
 
-                {/* Video Player */}
-                <div className="relative w-full aspect-video bg-black flex-shrink-0">
+                {/* Video Container */}
+                <div className="relative pt-[56.25%] bg-black">
                     <iframe
-                        src={`https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&modestbranding=1&showinfo=0`}
+                        src={`https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0`}
                         title={video.title}
-                        className="absolute inset-0 w-full h-full"
+                        className="absolute top-0 left-0 w-full h-full"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                     ></iframe>
                 </div>
 
-                {/* Info & Meta */}
-                <div className="p-6 overflow-y-auto bg-white">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <span className="font-semibold text-gray-700">{video.source}</span>
-                                {video.official && (
-                                    <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                                        Official Source
-                                    </span>
-                                )}
-                                {!video.official && video.expertVerified && (
-                                    <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                                        Expert Verified
-                                    </span>
-                                )}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                                Published on {new Date(video.published).toLocaleDateString()}
-                            </div>
+                {/* Footer Info */}
+                <div className="bg-white p-6 border-t-4 border-pink-500">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 font-display">{video.title}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{video.description}</p>
+                    {video.official && (
+                        <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
+                            ✓ Official Health Source
                         </div>
-
-                        <div className="flex gap-2">
-                            <button
-                                onClick={handleShare}
-                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
-                            >
-                                <FaShareAlt /> Share
-                            </button>
-                            <a
-                                href={video.sourceUrl || video.youtubeUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-4 py-2 bg-[#e6007e] hover:bg-pink-700 text-white rounded-lg text-sm font-medium transition-colors"
-                            >
-                                <FaExternalLinkAlt /> Open in YouTube
-                            </a>
-                        </div>
-                    </div>
-
-                    <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                        {video.description}
-                    </p>
-
-                    {/* Disclaimer */}
-                    <div className="bg-amber-50 border border-amber-100 rounded-lg p-4 flex items-start gap-3">
-                        <FaExclamationTriangle className="text-amber-500 mt-0.5 flex-shrink-0" />
-                        <div>
-                            <h4 className="text-sm font-bold text-amber-800 mb-1">Medical Disclaimer</h4>
-                            <p className="text-xs text-amber-700">
-                                This content is for educational purposes only. Videos are embedded from YouTube and hosted by their respective channels.
-                                We curate authoritative sources, but please verify medical advice with a qualified professional.
-                            </p>
-                        </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

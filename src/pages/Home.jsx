@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
@@ -23,8 +23,9 @@ const Home = () => {
     const subtitleRef = useRef(null);
     const uiRef = useRef(null);
     const sliderRef = useRef(null);
+    const sliderContainerRef = useRef(null);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         // 1. Initial Soft Bloom (Load Animation - Re-themed)
         const tl = gsap.timeline();
 
@@ -142,7 +143,6 @@ const Home = () => {
         // 4. Scroll Reveal Animations
         const sections = [
             '.highlights-section',
-            '.chapters-preview',
             '.cta-section'
         ];
 
@@ -178,6 +178,30 @@ const Home = () => {
                 }
             }
         );
+
+        // 5. Horizontal Scroll-Jacking (Latest Chapters)
+        if (sliderRef.current && sliderContainerRef.current) {
+            const container = sliderContainerRef.current;
+            const totalScroll = container.scrollWidth - window.innerWidth;
+
+            gsap.to(container, {
+                x: -totalScroll,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: sliderRef.current,
+                    pin: true,
+                    scrub: 1,
+                    // Adjust 'end' to control speed/distance of scroll
+                    end: () => "+=" + container.scrollWidth,
+                    invalidateOnRefresh: true,
+                }
+            });
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            ScrollTrigger.getAll().forEach(t => t.kill());
+        };
     }, []);
 
     // Show latest 5 chapters + "See More"
@@ -256,14 +280,14 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* 3. CHAPTERS SLIDER (Horizontal Scroll) */}
-            <section className="chapters-preview">
+            {/* 3. CHAPTERS SLIDER (Horizontal Scroll-Jacking) */}
+            <section ref={sliderRef} className="chapters-preview">
                 <div className="chapters-header">
                     <h2 className="section-title">Latest Chapters</h2>
                 </div>
                 <div className="soft-frame-top"></div>
 
-                <div ref={sliderRef} className="chapters-scroll-container">
+                <div ref={sliderContainerRef} className="chapters-scroll-container">
                     {featuredChapters.map((chapter, i) => (
                         <div key={chapter.id} className="chapter-slide">
                             <Card title={`Chapter ${chapter.id}`} className="h-full">
@@ -382,11 +406,11 @@ const Home = () => {
         .btn-secondary:hover { background: #f8fafc; border-color: var(--primary-pink); color: var(--primary-pink); }
 
         /* HIGHLIGHTS SECTION */
-        .highlights-section { padding: 120px 5%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 10; }
-        .section-header { margin-bottom: 80px; text-align: center; }
+        .highlights-section { padding: 60px 5%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 10; }
+        .section-header { margin-bottom: 40px; text-align: center; }
         .section-title { font-size: 3rem; font-family: var(--font-header); color: var(--text-color); margin-bottom: 1rem; }
         .header-line { width: 100px; height: 4px; background: var(--primary-pink); margin: 0 auto; border-radius: 2px; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .feature-card { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
         .card-icon { font-size: 3rem; color: var(--accent-cyan); margin-top: 2rem; opacity: 0.2; align-self: flex-end; }
 
@@ -404,24 +428,18 @@ const Home = () => {
         
         .chapters-scroll-container {
             display: flex;
-            gap: 30px;
+            gap: 40px;
             padding: 20px 5%;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
+            width: max-content; /* Ensure container is wide enough */
             z-index: 2;
         }
-        .chapters-scroll-container::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
-        }
+        /* Removed overflow-x: auto to prevent manual scroll */
         
         .chapter-slide { 
             min-width: 300px; 
             width: 350px;
             height: 450px; 
             flex-shrink: 0;
-            scroll-snap-align: start;
             position: relative; 
         }
         
@@ -477,7 +495,12 @@ const Home = () => {
         @media (max-width: 768px) {
           .hero-title { font-size: 3rem; }
           .chapters-preview { height: auto; padding: 100px 0; }
-          .chapters-scroll-container { padding: 20px 20px; gap: 20px; }
+          .chapters-scroll-container { 
+              width: 100%; 
+              overflow-x: auto; /* Fallback for mobile */
+              padding: 20px 20px; 
+              gap: 20px; 
+          }
           .chapter-slide { width: 85vw; min-width: 85vw; height: 400px; }
           .ui-circle { width: 300px; height: 300px; }
         }

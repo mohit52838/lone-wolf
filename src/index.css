@@ -93,37 +93,51 @@ button:active,
   transform: scale(0.95);
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #fff;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--primary-pink);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary-pink);
-}
+/* Scrollbar - Reverted to default to avoid overflow issues */
 
 /* Strict Prose Overrides for Content Restoration */
+.prose {
+  max-width: 65ch;
+  color: var(--text-body);
+  line-height: 1.75;
+}
+
 .prose h1,
 .prose h2,
 .prose h3,
 .prose h4 {
   color: var(--text-color) !important;
   font-family: var(--font-header);
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3;
+}
+
+.prose h1 {
+  font-size: 2.25em;
+}
+
+.prose h2 {
+  font-size: 1.75em;
+  border-bottom: 2px solid var(--primary-pink);
+  padding-bottom: 0.3em;
+  display: inline-block;
+}
+
+.prose h3 {
+  font-size: 1.5em;
+  color: var(--primary-pink) !important;
+}
+
+.prose p {
+  margin-bottom: 1.5em;
 }
 
 .prose a {
   color: var(--primary-pink) !important;
   text-decoration: none;
   border-bottom: 1px solid var(--primary-pink);
+  font-weight: 600;
 }
 
 .prose a:hover {
@@ -136,6 +150,35 @@ button:active,
   font-weight: 700;
 }
 
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.625em;
+  margin-bottom: 1.5em;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.625em;
+  margin-bottom: 1.5em;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+  padding-left: 0.375em;
+}
+
 .prose ul>li::marker {
   color: var(--primary-pink);
+}
+
+.prose blockquote {
+  border-left: 4px solid var(--primary-pink);
+  padding-left: 1em;
+  font-style: italic;
+  color: var(--text-body);
+  background: #fff0f5;
+  /* Light pink bg for quotes/tips */
+  padding: 1rem;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 1.5em;
 }

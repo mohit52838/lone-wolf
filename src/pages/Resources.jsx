@@ -68,8 +68,24 @@ const Resources = () => {
         }
     }
 
+    const [showToast, setShowToast] = useState(false);
+
+    const handleCopy = (text) => {
+        navigator.clipboard.writeText(text);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 1500);
+    };
+
     return (
-        <div className="min-h-screen bg-brand-bg pb-24">
+        <div className="min-h-screen bg-brand-bg pb-24 relative">
+            {/* Toast Notification */}
+            {showToast && (
+                <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-fade-in-up flex items-center gap-2">
+                    <FaCheckCircle />
+                    <span className="font-bold text-sm">Copied!</span>
+                </div>
+            )}
+
             <PageHeader
                 title="Resources & Support"
                 subtitle="Curated tools, contacts, and downloads to support your health journey."
@@ -93,7 +109,7 @@ const Resources = () => {
                                         {line.number}
                                     </a>
                                     <button
-                                        onClick={() => navigator.clipboard.writeText(line.number)}
+                                        onClick={() => handleCopy(line.number)}
                                         className="text-xs text-slate-400 hover:text-brand-primary uppercase font-bold tracking-wider"
                                     >
                                         Copy

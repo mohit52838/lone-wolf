@@ -12,7 +12,7 @@ const About = () => {
             <div className="max-w-3xl mx-auto px-6">
                 <div className="prose prose-lg prose-pink mx-auto">
                     <p className="lead text-xl text-gray-600 mb-8 font-light">
-                        HerHealth was born from a simple belief: **Every woman deserves to understand her own body.**
+                        HerHealth was born from a simple belief: <strong className="font-bold text-gray-900">Every woman deserves to understand her own body.</strong>
                     </p>
 
                     <h3>The Problem</h3>
