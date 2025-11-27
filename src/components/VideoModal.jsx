@@ -21,6 +21,8 @@ const VideoModal = ({ video, onClose }) => {
         <div
             className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn"
             onClick={onClose}
+            role="dialog"
+            aria-modal="true"
         >
             <div
                 className="relative w-full max-w-4xl bg-black rounded-2xl overflow-hidden shadow-2xl transform transition-all scale-100"

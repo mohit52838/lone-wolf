@@ -163,7 +163,7 @@ const Home = () => {
             );
         });
 
-        // Staggered Cards Reveal
+        // Staggered Cards Reveal (Highlights)
         gsap.fromTo(".feature-card",
             { y: 50, opacity: 0 },
             {
@@ -179,7 +179,7 @@ const Home = () => {
             }
         );
 
-        // 5. Horizontal Scroll-Jacking (Latest Chapters)
+        // 5. Horizontal Scroll-Jacking (Latest Chapters) - RESTORED
         if (sliderRef.current && sliderContainerRef.current) {
             const container = sliderContainerRef.current;
             const totalScroll = container.scrollWidth - window.innerWidth;
@@ -192,11 +192,14 @@ const Home = () => {
                     pin: true,
                     scrub: 1,
                     // Adjust 'end' to control speed/distance of scroll
-                    end: () => "+=" + container.scrollWidth,
+                    // Reduced multiplier to 0.8 to make horizontal scroll faster/more sensitive
+                    end: () => "+=" + (container.scrollWidth * 0.8),
                     invalidateOnRefresh: true,
                 }
             });
         }
+
+        // Removed Staggered Reveal Animation
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
@@ -204,8 +207,8 @@ const Home = () => {
         };
     }, []);
 
-    // Show latest 5 chapters + "See More"
-    const featuredChapters = chapters.slice(0, 5);
+    // Show latest 10 chapters + "See More" card
+    const featuredChapters = chapters.slice(0, 10);
 
     return (
         <div className="home-page">
@@ -303,11 +306,11 @@ const Home = () => {
                         </div>
                     ))}
 
-                    {/* "View All Chapters" Card */}
+                    {/* See All Chapters Card */}
                     <div className="chapter-slide">
                         <Link to="/chapters" className="see-more-card">
                             <div className="see-more-content">
-                                <span className="see-more-text">View All Chapters</span>
+                                <span className="see-more-text">See All Chapters</span>
                                 <div className="see-more-icon-wrapper">
                                     <FaArrowRight />
                                 </div>
@@ -334,7 +337,7 @@ const Home = () => {
         /* HERO SECTION STYLES */
         .hero-section {
           height: 100vh;
-          width: 100vw;
+          width: 100%;
           position: relative;
           overflow: hidden;
           display: flex;
@@ -406,8 +409,8 @@ const Home = () => {
         .btn-secondary:hover { background: #f8fafc; border-color: var(--primary-pink); color: var(--primary-pink); }
 
         /* HIGHLIGHTS SECTION */
-        .highlights-section { padding: 60px 5%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 10; }
-        .section-header { margin-bottom: 40px; text-align: center; }
+        .highlights-section { padding: 40px 5%; max-width: 1400px; margin: 0 auto; position: relative; z-index: 10; }
+        .section-header { margin-bottom: 30px; text-align: center; }
         .section-title { font-size: 3rem; font-family: var(--font-header); color: var(--text-color); margin-bottom: 1rem; }
         .header-line { width: 100px; height: 4px; background: var(--primary-pink); margin: 0 auto; border-radius: 2px; }
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
@@ -446,7 +449,7 @@ const Home = () => {
         .slide-content { display: flex; flex-direction: column; height: 100%; }
         .slide-icon { font-size: 2.5rem; color: var(--accent-purple); margin-bottom: 1.5rem; }
         .read-more { margin-top: auto; color: var(--primary-pink); font-weight: 700; text-decoration: none; }
-        
+
         /* See More Card */
         .see-more-card {
             display: flex;
@@ -496,8 +499,6 @@ const Home = () => {
           .hero-title { font-size: 3rem; }
           .chapters-preview { height: auto; padding: 100px 0; }
           .chapters-scroll-container { 
-              width: 100%; 
-              overflow-x: auto; /* Fallback for mobile */
               padding: 20px 20px; 
               gap: 20px; 
           }

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Chapters from './pages/Chapters';
 import ChapterPage from './pages/ChapterPage';
@@ -29,6 +30,7 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <ScrollToTop />
       <Navbar />
       <main className={`flex-grow ${!isHomePage ? 'pt-24' : ''}`}>
         <Routes>
