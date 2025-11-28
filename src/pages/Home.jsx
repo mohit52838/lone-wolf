@@ -325,7 +325,7 @@ const Home = () => {
             {/* CTA Footer */}
             <section className="cta-section">
                 <h2 className="section-title">Ready to take control?</h2>
-                <Link to="/resources" className="btn-primary pulse-btn btn-tilt">Open Symptom Tracker</Link>
+                <Link to="/resources#symptom-tracker" className="btn-primary pulse-btn btn-tilt">Open Symptom Tracker</Link>
             </section>
 
             <style>{`

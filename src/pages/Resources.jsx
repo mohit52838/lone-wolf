@@ -186,7 +186,7 @@ const Resources = () => {
                         <div className="grid md:grid-cols-2 gap-12 items-start">
 
                             {/* Google Sheets Tracker */}
-                            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                            <div id="symptom-tracker" className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
                                 <div className="flex items-center gap-4 mb-6">
                                     <div className="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-2xl">
                                         <FaTable />
