@@ -179,29 +179,44 @@ const Home = () => {
             }
         );
 
-        // 5. Horizontal Scroll-Jacking (Latest Chapters) - RESTORED
-        if (sliderRef.current && sliderContainerRef.current) {
-            const container = sliderContainerRef.current;
-            const totalScroll = container.scrollWidth - window.innerWidth;
+        // 5. Horizontal Scroll (Native-friendly with Wheel Support)
+        const container = sliderContainerRef.current;
+        let handleWheel;
 
-            gsap.to(container, {
-                x: -totalScroll,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: sliderRef.current,
-                    pin: true,
-                    scrub: 1,
-                    // Adjust 'end' to control speed/distance of scroll
-                    // Reduced multiplier to 0.8 to make horizontal scroll faster/more sensitive
-                    end: () => "+=" + (container.scrollWidth * 0.8),
-                    invalidateOnRefresh: true,
+        if (container) {
+            handleWheel = (e) => {
+                // Only hijack scroll if we have horizontal content to scroll
+                if (container.scrollWidth > container.clientWidth) {
+                    // Prevent vertical scroll
+                    e.preventDefault();
+
+                    // Calculate target scroll position
+                    // Multiplier 3.0 for fast but controlled speed
+                    const scrollAmount = e.deltaY * 3.0;
+                    const currentScroll = container.scrollLeft;
+                    let targetScroll = currentScroll + scrollAmount;
+
+                    // Clamp target to bounds
+                    targetScroll = Math.max(0, Math.min(targetScroll, container.scrollWidth - container.clientWidth));
+
+                    // Use GSAP for smooth scrolling
+                    gsap.to(container, {
+                        scrollLeft: targetScroll,
+                        duration: 0.5,
+                        ease: "power2.out",
+                        overwrite: true
+                    });
                 }
-            });
+            };
+
+            // Add non-passive listener to allow preventDefault
+            container.addEventListener('wheel', handleWheel, { passive: false });
         }
 
-        // Removed Staggered Reveal Animation
-
         return () => {
+            if (container && handleWheel) {
+                container.removeEventListener('wheel', handleWheel);
+            }
             window.removeEventListener('mousemove', handleMouseMove);
             ScrollTrigger.getAll().forEach(t => t.kill());
         };
@@ -218,33 +233,35 @@ const Home = () => {
                 <div className="layer-bg"></div>
 
                 {/* Layer 2: Floral/Soft Grid */}
-                <div ref={gridRef} className="layer-grid">
+                < div ref={gridRef} className="layer-grid" >
                     <div className="grid-plane"></div>
-                </div>
+                </div >
 
                 {/* Layer 3: Floating Petals/Particles */}
-                <div ref={particlesRef} className="layer-particles">
-                    {[...Array(50)].map((_, i) => (
-                        <div key={i} className="soft-particle" style={{
-                            left: `${Math.random() * 100}%`,
-                            top: '110%',
-                            width: `${Math.random() * 15 + 5}px`,
-                            height: `${Math.random() * 15 + 5}px`,
-                            opacity: Math.random() * 0.3 + 0.1,
-                            backgroundColor: i % 3 === 0 ? 'var(--accent-cyan)' : (i % 3 === 1 ? 'var(--accent-purple)' : '#fff')
-                        }}></div>
-                    ))}
-                </div>
+                < div ref={particlesRef} className="layer-particles" >
+                    {
+                        [...Array(50)].map((_, i) => (
+                            <div key={i} className="soft-particle" style={{
+                                left: `${Math.random() * 100}%`,
+                                top: '110%',
+                                width: `${Math.random() * 15 + 5}px`,
+                                height: `${Math.random() * 15 + 5}px`,
+                                opacity: Math.random() * 0.3 + 0.1,
+                                backgroundColor: i % 3 === 0 ? 'var(--accent-cyan)' : (i % 3 === 1 ? 'var(--accent-purple)' : '#fff')
+                            }}></div>
+                        ))
+                    }
+                </div >
 
                 {/* Layer 4: Soft Overlay */}
-                <div className="layer-overlay"></div>
+                < div className="layer-overlay" ></div >
 
                 {/* Soft UI Elements */}
-                <div ref={uiRef} className="hero-ui">
+                < div ref={uiRef} className="hero-ui" >
                     <div className="ui-circle circle-1"></div>
                     <div className="ui-circle circle-2"></div>
                     <div className="ui-circle circle-3"></div>
-                </div>
+                </div >
 
                 <div ref={contentRef} className="hero-content">
                     <h1 ref={titleRef} className="hero-title">
@@ -259,10 +276,10 @@ const Home = () => {
                         <Link to="/about" className="btn-secondary btn-tilt">Our Mission</Link>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* 2. HIGHLIGHTS SECTION (Cards) */}
-            <section className="highlights-section">
+            < section className="highlights-section" >
                 <div className="section-header">
                     <h2 className="section-title">Why HerHealth?</h2>
                     <div className="header-line"></div>
@@ -281,10 +298,10 @@ const Home = () => {
                         <div className="card-icon"><FaUsers /></div>
                     </Card>
                 </div>
-            </section>
+            </section >
 
             {/* 3. CHAPTERS SLIDER (Horizontal Scroll-Jacking) */}
-            <section ref={sliderRef} className="chapters-preview">
+            < section ref={sliderRef} className="chapters-preview" >
                 <div className="chapters-header">
                     <h2 className="section-title">Latest Chapters</h2>
                 </div>
@@ -320,13 +337,13 @@ const Home = () => {
                 </div>
 
                 <div className="soft-frame-bottom"></div>
-            </section>
+            </section >
 
             {/* CTA Footer */}
-            <section className="cta-section">
+            < section className="cta-section" >
                 <h2 className="section-title">Ready to take control?</h2>
                 <Link to="/resources#symptom-tracker" className="btn-primary pulse-btn btn-tilt">Open Symptom Tracker</Link>
-            </section>
+            </section >
 
             <style>{`
         .home-page {
@@ -432,10 +449,18 @@ const Home = () => {
             display: flex;
             gap: 40px;
             padding: 20px 5%;
-            width: max-content; /* Ensure container is wide enough */
+            width: 100%; /* Changed from max-content to 100% to allow overflow */
+            overflow-x: auto; /* Enable native horizontal scroll */
+            /* Removed scroll-behavior: smooth to prevent fighting with manual scroll updates */
             z-index: 2;
+            /* Hide scrollbar for Chrome/Safari/Opera */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
-        /* Removed overflow-x: auto to prevent manual scroll */
+        .chapters-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+        /* Removed overflow-x: auto to prevent manual scroll - RE-ADDED for new behavior */
         
         .chapter-slide { 
             min-width: 300px; 
@@ -505,7 +530,7 @@ const Home = () => {
           .ui-circle { width: 300px; height: 300px; }
         }
       `}</style>
-        </div>
+        </div >
     );
 };
 
