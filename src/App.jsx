@@ -28,7 +28,9 @@ import AboutMobile from './pages/About.mobile';
 
 // Shared Components
 import Footer from './components/Footer';
-import ChapterPage from './pages/ChapterPage';
+import ChapterPageDesktop from './pages/ChapterPage';
+import ChapterPageTablet from './pages/ChapterPage.tablet';
+import ChapterPageMobile from './pages/ChapterPage.mobile';
 import FindDoctors from './pages/FindDoctors';
 
 let hasHandledReload = false;
@@ -88,7 +90,7 @@ function App() {
         <Routes>
           <Route path="/" element={getComponent(HomeDesktop, HomeTablet, HomeMobile)} />
           <Route path="/chapters" element={getComponent(ChaptersDesktop, ChaptersTablet, ChaptersMobile)} />
-          <Route path="/chapter/:id" element={<ChapterPage />} />
+          <Route path="/chapter/:id" element={getComponent(ChapterPageDesktop, ChapterPageTablet, ChapterPageMobile)} />
           <Route path="/resources" element={getComponent(ResourcesDesktop, ResourcesTablet, ResourcesMobile)} />
           <Route path="/about" element={getComponent(AboutDesktop, AboutTablet, AboutMobile)} />
           <Route path="/find-doctors" element={<FindDoctors />} />
