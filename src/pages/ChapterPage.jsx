@@ -86,13 +86,14 @@ const ChapterPage = () => {
 
             <div className="max-w-6xl mx-auto px-6">
                 <div className="flex flex-col lg:flex-row gap-16">
-                    {/* Sidebar (TOC) */}
+                    {/* Sidebar (TOC) - Desktop */}
                     <aside className="hidden lg:block w-72 flex-shrink-0">
                         <TOC content={content} />
                     </aside>
 
+                    {/* Mobile TOC (Dropdown) */}
                     {/* Main Content */}
-                    <main className="flex-grow max-w-3xl mx-auto lg:mx-0">
+                    <main className="flex-grow max-w-3xl mx-auto lg:mx-0 chapter-content">
                         {loading ? (
                             <div className="flex justify-center py-20">
                                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
@@ -102,7 +103,7 @@ const ChapterPage = () => {
                                 {error}
                             </div>
                         ) : (
-                            <article className="prose lg:prose-lg prose-pink max-w-none leading-relaxed bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-pink-50">
+                            <article className="prose lg:prose-lg prose-pink max-w-none leading-relaxed bg-white p-6 md:p-12 rounded-2xl shadow-sm border border-pink-50">
                                 <div dangerouslySetInnerHTML={{ __html: content }} />
                             </article>
                         )}

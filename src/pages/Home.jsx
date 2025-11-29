@@ -26,79 +26,111 @@ const Home = () => {
     const sliderContainerRef = useRef(null);
 
     useLayoutEffect(() => {
-        // 1. Initial Soft Bloom (Load Animation - Re-themed)
-        const tl = gsap.timeline();
+        // Use matchMedia for responsive animations
+        let mm = gsap.matchMedia();
 
-        tl.to(heroRef.current, { opacity: 1, duration: 0.8 })
-            .fromTo(gridRef.current,
-                { scale: 1.2, opacity: 0, rotationX: 45 },
-                { scale: 1, opacity: 0.6, rotationX: 20, duration: 2.5, ease: "power2.out" }
-            )
-            .fromTo(titleRef.current,
-                { opacity: 0, y: 80, filter: "blur(12px)" },
-                { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.8, ease: "power3.out" },
-                "-=2"
-            )
-            .fromTo(subtitleRef.current,
-                { opacity: 0, y: 30 },
-                { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
-                "-=1.2"
-            )
-            .fromTo(".hero-cta",
-                { opacity: 0, y: 20 },
-                { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.7)" },
-                "-=0.8"
+        mm.add("(min-width: 769px)", () => {
+            // Desktop Animations (Full Power)
+
+            // 1. Initial Soft Bloom
+            const tl = gsap.timeline();
+            tl.to(heroRef.current, { opacity: 1, duration: 0.8 })
+                .fromTo(gridRef.current,
+                    { scale: 1.2, opacity: 0, rotationX: 45 },
+                    { scale: 1, opacity: 0.6, rotationX: 20, duration: 2.5, ease: "power2.out" }
+                )
+                .fromTo(titleRef.current,
+                    { opacity: 0, y: 80, filter: "blur(12px)" },
+                    { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.8, ease: "power3.out" },
+                    "-=2"
+                )
+                .fromTo(subtitleRef.current,
+                    { opacity: 0, y: 30 },
+                    { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
+                    "-=1.2"
+                )
+                .fromTo(".hero-cta",
+                    { opacity: 0, y: 20 },
+                    { opacity: 1, y: 0, duration: 0.8, ease: "back.out(1.7)" },
+                    "-=0.8"
+                );
+
+            // 2. Parallax Effect
+            const handleMouseMove = (e) => {
+                const { clientX, clientY } = e;
+                const xPos = (clientX / window.innerWidth - 0.5);
+                const yPos = (clientY / window.innerHeight - 0.5);
+
+                gsap.to(gridRef.current, { rotationX: 20 + yPos * 5, rotationY: xPos * 5, x: xPos * 20, duration: 2, ease: "power2.out" });
+                gsap.to(particlesRef.current, { x: xPos * 60, y: yPos * 60, duration: 1.5, ease: "power2.out" });
+                gsap.to(contentRef.current, { x: xPos * -30, y: yPos * -30, duration: 1.5, ease: "power2.out" });
+                gsap.to(uiRef.current, { x: xPos * -80, y: yPos * -80, rotation: xPos * 20, duration: 2.5, ease: "power2.out" });
+            };
+            window.addEventListener('mousemove', handleMouseMove);
+
+            // 3. Scroll Reveal
+            const sections = ['.highlights-section', '.cta-section'];
+            sections.forEach(section => {
+                gsap.fromTo(section,
+                    { y: 50, opacity: 0 },
+                    {
+                        y: 0, opacity: 1, duration: 1, ease: "power3.out",
+                        scrollTrigger: { trigger: section, start: "top 80%", toggleActions: "play none none reverse" }
+                    }
+                );
+            });
+
+            // Staggered Cards
+            gsap.fromTo(".feature-card",
+                { y: 50, opacity: 0 },
+                {
+                    y: 0, opacity: 1, duration: 0.8, stagger: 0.2, ease: "power3.out",
+                    scrollTrigger: { trigger: ".features-grid", start: "top 85%" }
+                }
             );
 
-        // 2. Advanced Parallax Effect (Multi-layer)
-        const handleMouseMove = (e) => {
-            const { clientX, clientY } = e;
-            const xPos = (clientX / window.innerWidth - 0.5);
-            const yPos = (clientY / window.innerHeight - 0.5);
+            return () => {
+                window.removeEventListener('mousemove', handleMouseMove);
+            };
+        });
 
-            // Grid moves slowly
-            gsap.to(gridRef.current, {
-                rotationX: 20 + yPos * 5,
-                rotationY: xPos * 5,
-                x: xPos * 20,
-                duration: 2,
-                ease: "power2.out"
+        mm.add("(max-width: 768px)", () => {
+            // Mobile Animations (Lightweight & Faster)
+
+            // Simple Fade In
+            gsap.to(heroRef.current, { opacity: 1, duration: 0.5 });
+            gsap.fromTo(titleRef.current, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out", delay: 0.2 });
+            gsap.fromTo(subtitleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.4 });
+            gsap.fromTo(".hero-cta", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.2)", delay: 0.6 });
+
+            // Simple Scroll Reveal (No scrub, just trigger)
+            const sections = ['.highlights-section', '.cta-section'];
+            sections.forEach(section => {
+                gsap.fromTo(section,
+                    { y: 30, opacity: 0 },
+                    {
+                        y: 0, opacity: 1, duration: 0.6, ease: "power2.out",
+                        scrollTrigger: { trigger: section, start: "top 90%" }
+                    }
+                );
             });
 
-            // Particles move faster (depth)
-            gsap.to(particlesRef.current, {
-                x: xPos * 60,
-                y: yPos * 60,
-                duration: 1.5,
-                ease: "power2.out"
-            });
+            // Staggered Cards (Faster)
+            gsap.fromTo(".feature-card",
+                { y: 30, opacity: 0 },
+                {
+                    y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power2.out",
+                    scrollTrigger: { trigger: ".features-grid", start: "top 90%" }
+                }
+            );
+        });
 
-            // Content moves opposite (float)
-            gsap.to(contentRef.current, {
-                x: xPos * -30,
-                y: yPos * -30,
-                duration: 1.5,
-                ease: "power2.out"
-            });
-
-            // UI Circles move wildly
-            gsap.to(uiRef.current, {
-                x: xPos * -80,
-                y: yPos * -80,
-                rotation: xPos * 20,
-                duration: 2.5,
-                ease: "power2.out"
-            });
-        };
-
-        window.addEventListener('mousemove', handleMouseMove);
-
-        // 3. Continuous Animations (Floating Petals)
+        // Continuous Animations (Particles) - Keep lightweight
         const particles = particlesRef.current.children;
         Array.from(particles).forEach((p, i) => {
             gsap.to(p, {
                 y: -window.innerHeight,
-                x: `random(-100, 100)`,
+                x: `random(-50, 50)`, // Reduced movement range
                 rotation: `random(0, 360)`,
                 duration: `random(10, 25)`,
                 repeat: -1,
@@ -107,109 +139,21 @@ const Home = () => {
             });
         });
 
-        // Button Tilt Effect
-        const buttons = document.querySelectorAll('.btn-tilt');
-        buttons.forEach(btn => {
-            btn.addEventListener('mousemove', (e) => {
-                const rect = btn.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-
-                const rotateX = ((y - centerY) / centerY) * -15;
-                const rotateY = ((x - centerX) / centerX) * 15;
-
-                gsap.to(btn, {
-                    rotateX: rotateX,
-                    rotateY: rotateY,
-                    scale: 1.1,
-                    duration: 0.3,
-                    ease: "power2.out"
-                });
-            });
-
-            btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, {
-                    rotateX: 0,
-                    rotateY: 0,
-                    scale: 1,
-                    duration: 0.5,
-                    ease: "elastic.out(1, 0.5)"
-                });
-            });
-        });
-
-        // 4. Scroll Reveal Animations
-        const sections = [
-            '.highlights-section',
-            '.cta-section'
-        ];
-
-        sections.forEach(section => {
-            gsap.fromTo(section,
-                { y: 50, opacity: 0 },
-                {
-                    y: 0,
-                    opacity: 1,
-                    duration: 1,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: section,
-                        start: "top 80%",
-                        toggleActions: "play none none reverse"
-                    }
-                }
-            );
-        });
-
-        // Staggered Cards Reveal (Highlights)
-        gsap.fromTo(".feature-card",
-            { y: 50, opacity: 0 },
-            {
-                y: 0,
-                opacity: 1,
-                duration: 0.8,
-                stagger: 0.2,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: ".features-grid",
-                    start: "top 85%"
-                }
-            }
-        );
-
-        // 5. Horizontal Scroll (Native-friendly with Wheel Support)
+        // Horizontal Scroll Logic (Desktop Only for Wheel Jacking)
         const container = sliderContainerRef.current;
         let handleWheel;
 
-        if (container) {
+        if (container && window.innerWidth > 768) {
             handleWheel = (e) => {
-                // Only hijack scroll if we have horizontal content to scroll
                 if (container.scrollWidth > container.clientWidth) {
-                    // Prevent vertical scroll
                     e.preventDefault();
-
-                    // Calculate target scroll position
-                    // Multiplier 3.0 for fast but controlled speed
                     const scrollAmount = e.deltaY * 3.0;
                     const currentScroll = container.scrollLeft;
                     let targetScroll = currentScroll + scrollAmount;
-
-                    // Clamp target to bounds
                     targetScroll = Math.max(0, Math.min(targetScroll, container.scrollWidth - container.clientWidth));
-
-                    // Use GSAP for smooth scrolling
-                    gsap.to(container, {
-                        scrollLeft: targetScroll,
-                        duration: 0.5,
-                        ease: "power2.out",
-                        overwrite: true
-                    });
+                    gsap.to(container, { scrollLeft: targetScroll, duration: 0.5, ease: "power2.out", overwrite: true });
                 }
             };
-
-            // Add non-passive listener to allow preventDefault
             container.addEventListener('wheel', handleWheel, { passive: false });
         }
 
@@ -217,7 +161,7 @@ const Home = () => {
             if (container && handleWheel) {
                 container.removeEventListener('wheel', handleWheel);
             }
-            window.removeEventListener('mousemove', handleMouseMove);
+            mm.revert(); // Clean up matchMedia
             ScrollTrigger.getAll().forEach(t => t.kill());
         };
     }, []);
@@ -300,14 +244,14 @@ const Home = () => {
                 </div>
             </section >
 
-            {/* 3. CHAPTERS SLIDER (Horizontal Scroll-Jacking) */}
-            < section ref={sliderRef} className="chapters-preview" >
+            {/* 3. CHAPTERS SECTION (Horizontal Scroll with Snap) */}
+            <section ref={sliderRef} className="chapters-preview">
                 <div className="chapters-header">
                     <h2 className="section-title">Latest Chapters</h2>
                 </div>
-                <div className="soft-frame-top"></div>
+                <div className="soft-frame-top hidden md:block"></div>
 
-                <div ref={sliderContainerRef} className="chapters-scroll-container">
+                <div ref={sliderContainerRef} className="chapters-scroll-container no-scrollbar">
                     {featuredChapters.map((chapter, i) => (
                         <div key={chapter.id} className="chapter-slide">
                             <Card title={`Chapter ${chapter.id}`} className="h-full">
@@ -336,8 +280,8 @@ const Home = () => {
                     </div>
                 </div>
 
-                <div className="soft-frame-bottom"></div>
-            </section >
+                <div className="soft-frame-bottom hidden md:block"></div>
+            </section>
 
             {/* CTA Footer */}
             < section className="cta-section" >
@@ -520,14 +464,102 @@ const Home = () => {
         .cta-section { padding: 150px 20px; text-align: center; background: radial-gradient(circle at center, rgba(255, 122, 162, 0.05), transparent 70%); }
 
         @media (max-width: 768px) {
-          .hero-title { font-size: 3rem; }
-          .chapters-preview { height: auto; padding: 100px 0; }
-          .chapters-scroll-container { 
-              padding: 20px 20px; 
-              gap: 20px; 
+          .hero-section {
+              height: auto;
+              min-height: 100vh;
+              padding-top: 80px; /* Reduced padding */
+              padding-bottom: 40px;
           }
-          .chapter-slide { width: 85vw; min-width: 85vw; height: 400px; }
-          .ui-circle { width: 300px; height: 300px; }
+          
+          .hero-title { 
+              font-size: 2.2rem; /* Scaled down */
+              margin-bottom: 1rem;
+          }
+          
+          .hero-subtitle {
+              font-size: 1rem;
+              margin-bottom: 1.5rem;
+          }
+          
+          .hero-cta {
+              flex-direction: column;
+              gap: 0.8rem;
+              width: 100%;
+              max-width: 280px;
+              margin: 0 auto;
+          }
+          
+          .btn-primary, .btn-secondary {
+              width: 100%;
+              padding: 0.7rem 1.2rem;
+              text-align: center;
+              font-size: 0.95rem;
+          }
+
+          .chapters-preview { 
+              height: auto; 
+              padding: 40px 0; 
+          }
+          
+          .chapters-scroll-container { 
+              padding: 20px 5%; 
+              gap: 15px; 
+              flex-direction: row; /* Keep horizontal on mobile */
+              overflow-x: auto; /* Enable horizontal scroll */
+              scroll-snap-type: x mandatory; /* Snap behavior */
+              -webkit-overflow-scrolling: touch; /* Smooth touch scroll */
+          }
+          
+          .chapter-slide { 
+              width: 85vw; /* Slightly smaller than full width */
+              min-width: 85vw; 
+              height: auto;
+              min-height: 350px;
+              scroll-snap-align: center; /* Snap to center */
+          }
+          
+          .ui-circle { width: 250px; height: 250px; }
+          
+          .highlights-section {
+              padding: 40px 5%;
+          }
+          
+          .section-title {
+              font-size: 1.8rem;
+          }
+        }
+
+        /* Tablet Specific Styles (768px - 1024px) */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .hero-title { font-size: 3.5rem; }
+            .hero-cta { flex-direction: row; }
+            .chapters-scroll-container { 
+                padding: 20px 40px;
+                gap: 25px;
+            }
+            .chapter-slide {
+                min-width: 300px;
+                width: 300px;
+            }
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr); /* Ensure 3 cards in a row if possible, or adjust */
+                gap: 20px;
+            }
+            /* If 3 columns is too tight, maybe 2? But user asked for centered 3 cards */
+             .features-grid {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .feature-card {
+                width: 30%; /* Approx 3 per row */
+                min-width: 220px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title { font-size: 1.8rem; }
+            .hero-subtitle { font-size: 0.9rem; }
         }
       `}</style>
         </div >

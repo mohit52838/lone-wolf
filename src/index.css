@@ -171,6 +171,374 @@ button:active,
   color: var(--primary-pink);
 }
 
+@import "tailwindcss";
+
+:root {
+  /* HerHealth Theme - Strict Match */
+  --bg-color: #fff5fa;
+  /* Soft Pink */
+  --primary-pink: #e6007e;
+  /* Primary Pink */
+  --secondary-pink: #ff89b5;
+  /* Kept for gradients/accents */
+  --soft-pink: #ffccdd;
+  /* Baby Pink */
+  --bg-pink: #fff5fa;
+  --accent-blue: #e6007e;
+  /* Mapped to Primary for consistency */
+  --accent-cyan: #e6007e;
+  /* Mapped to Primary */
+  --accent-purple: #d63384;
+  /* Darker pink for contrast */
+
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(230, 0, 126, 0.2);
+
+  --text-color: #1f2937;
+  /* Heading Color */
+  --text-body: #4b5563;
+
+  --font-header: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Soft Pink Glow */
+  --neon-glow: 0 0 15px rgba(230, 0, 126, 0.3), 0 0 30px rgba(230, 0, 126, 0.1);
+  --tron-grid-color: rgba(230, 0, 126, 0.05);
+}
+
+@theme {
+  --color-brand-primary: #e6007e;
+  --color-brand-secondary: #ff89b5;
+  --color-brand-accent: #ffccdd;
+  --font-display: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  animation: pageFadeIn 0.8s ease-out forwards;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes moving-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Utility Classes */
+.text-gradient-pink {
+  background: linear-gradient(to right, var(--primary-pink), var(--secondary-pink));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Mobile Button Press Effect */
+button:active,
+.btn-primary:active,
+.btn-secondary:active,
+.nav-link:active {
+  transform: scale(0.95);
+}
+
+/* Scrollbar - Reverted to default to avoid overflow issues */
+
+/* Strict Prose Overrides for Content Restoration */
+.prose {
+  max-width: 65ch;
+  color: var(--text-body);
+  line-height: 1.75;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--text-color) !important;
+  font-family: var(--font-header);
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3;
+}
+
+.prose h1 {
+  font-size: 2.25em;
+}
+
+.prose h2 {
+  font-size: 1.75em;
+  border-bottom: 2px solid var(--primary-pink);
+  padding-bottom: 0.3em;
+  display: inline-block;
+}
+
+.prose h3 {
+  font-size: 1.5em;
+  color: var(--primary-pink) !important;
+}
+
+.prose p {
+  margin-bottom: 1.5em;
+}
+
+.prose a {
+  color: var(--primary-pink) !important;
+  text-decoration: none;
+  border-bottom: 1px solid var(--primary-pink);
+  font-weight: 600;
+}
+
+.prose a:hover {
+  color: var(--secondary-pink) !important;
+  border-bottom-color: var(--secondary-pink);
+}
+
+.prose strong {
+  color: var(--text-color);
+  font-weight: 700;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.625em;
+  margin-bottom: 1.5em;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.625em;
+  margin-bottom: 1.5em;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+  padding-left: 0.375em;
+}
+
+.prose ul>li::marker {
+  color: var(--primary-pink);
+}
+
+.prose blockquote {
+  border-left: 4px solid var(--primary-pink);
+  padding-left: 1em;
+  font-style: italic;
+  color: var(--text-body);
+  background: #fff0f5;
+  /* Light pink bg for quotes/tips */
+  padding: 1rem;
+  list-style-type: decimal;
+  padding-left: 1.625em;
+  margin-bottom: 1.5em;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+  padding-left: 0.375em;
+}
+
+.prose ul>li::marker {
+  color: var(--primary-pink);
+}
+
+@import "tailwindcss";
+
+:root {
+  /* HerHealth Theme - Strict Match */
+  --bg-color: #fff5fa;
+  /* Soft Pink */
+  --primary-pink: #e6007e;
+  /* Primary Pink */
+  --secondary-pink: #ff89b5;
+  /* Kept for gradients/accents */
+  --soft-pink: #ffccdd;
+  /* Baby Pink */
+  --bg-pink: #fff5fa;
+  --accent-blue: #e6007e;
+  /* Mapped to Primary for consistency */
+  --accent-cyan: #e6007e;
+  /* Mapped to Primary */
+  --accent-purple: #d63384;
+  /* Darker pink for contrast */
+
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(230, 0, 126, 0.2);
+
+  --text-color: #1f2937;
+  /* Heading Color */
+  --text-body: #4b5563;
+
+  --font-header: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Soft Pink Glow */
+  --neon-glow: 0 0 15px rgba(230, 0, 126, 0.3), 0 0 30px rgba(230, 0, 126, 0.1);
+  --tron-grid-color: rgba(230, 0, 126, 0.05);
+}
+
+@theme {
+  --color-brand-primary: #e6007e;
+  --color-brand-secondary: #ff89b5;
+  --color-brand-accent: #ffccdd;
+  --font-display: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  animation: pageFadeIn 0.8s ease-out forwards;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes moving-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Utility Classes */
+.text-gradient-pink {
+  background: linear-gradient(to right, var(--primary-pink), var(--secondary-pink));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Mobile Button Press Effect */
+button:active,
+.btn-primary:active,
+.btn-secondary:active,
+.nav-link:active {
+  transform: scale(0.95);
+}
+
+/* Scrollbar - Reverted to default to avoid overflow issues */
+
+/* Strict Prose Overrides for Content Restoration */
+.prose {
+  max-width: 65ch;
+  color: var(--text-body);
+  line-height: 1.75;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--text-color) !important;
+  font-family: var(--font-header);
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3;
+}
+
+.prose h1 {
+  font-size: 2.25em;
+}
+
+.prose h2 {
+  font-size: 1.75em;
+  border-bottom: 2px solid var(--primary-pink);
+  padding-bottom: 0.3em;
+  display: inline-block;
+}
+
+.prose h3 {
+  font-size: 1.5em;
+  color: var(--primary-pink) !important;
+}
+
+.prose p {
+  margin-bottom: 1.5em;
+}
+
+.prose a {
+  color: var(--primary-pink) !important;
+  text-decoration: none;
+  border-bottom: 1px solid var(--primary-pink);
+  font-weight: 600;
+}
+
+.prose a:hover {
+  color: var(--secondary-pink) !important;
+  border-bottom-color: var(--secondary-pink);
+}
+
+.prose strong {
+  color: var(--text-color);
+  font-weight: 700;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.625em;
+  margin-bottom: 1.5em;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.625em;
+  margin-bottom: 1.5em;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+  padding-left: 0.375em;
+}
+
+.prose ul>li::marker {
+  color: var(--primary-pink);
+}
+
 .prose blockquote {
   border-left: 4px solid var(--primary-pink);
   padding-left: 1em;
@@ -181,4 +549,58 @@ button:active,
   padding: 1rem;
   border-radius: 0 8px 8px 0;
   margin-bottom: 1.5em;
+}
+
+/* Mobile Fixes & Global Overrides */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+@media (max-width: 768px) {
+  .prose h1 {
+    font-size: 1.75em;
+    margin-top: 1.5em;
+  }
+
+  .prose h2 {
+    font-size: 1.5em;
+  }
+
+  .prose h3 {
+    font-size: 1.25em;
+  }
+
+  .prose p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
+/* Tablet Specific Styles (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .prose {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .prose h1 {
+    font-size: 2em;
+  }
 }

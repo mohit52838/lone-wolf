@@ -82,7 +82,7 @@ const Resources = () => {
             {/* Toast Notification */}
             {showToast && (
                 <div
-                    className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-fade-in-up flex items-center gap-2"
+                    className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-pink-600 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-fade-in-up flex items-center gap-2 w-[90%] max-w-sm justify-center"
                     role="status"
                     aria-live="polite"
                 >
@@ -104,18 +104,18 @@ const Resources = () => {
                         <span className="w-12 h-12 rounded-xl bg-pink-100 text-brand-primary flex items-center justify-center mr-4 text-2xl shadow-sm">📞</span>
                         Emergency Helplines
                     </h2>
-                    <div className="grid md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                         {helplines.map((line, idx) => (
-                            <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                            <div key={idx} className="bg-white p-5 md:p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                                 <h3 className="font-bold text-lg text-slate-900 mb-2">{line.name}</h3>
-                                <p className="text-sm text-slate-500 mb-6 h-10 leading-relaxed">{line.desc}</p>
-                                <div className="flex items-center justify-between bg-pink-50 rounded-xl p-4 border border-pink-100">
-                                    <a href={`tel:${line.number}`} className="text-brand-primary font-mono font-bold text-lg hover:underline">
+                                <p className="text-sm text-slate-500 mb-4 md:mb-6 h-auto md:h-10 leading-relaxed">{line.desc}</p>
+                                <div className="flex items-center justify-between bg-pink-50 rounded-xl p-3 md:p-4 border border-pink-100 flex-wrap gap-2">
+                                    <a href={`tel:${line.number}`} className="text-brand-primary font-mono font-bold text-lg hover:underline break-all">
                                         {line.number}
                                     </a>
                                     <button
                                         onClick={() => handleCopy(line.number)}
-                                        className="text-xs text-slate-400 hover:text-brand-primary uppercase font-bold tracking-wider"
+                                        className="text-xs text-slate-500 hover:text-brand-primary uppercase font-bold tracking-wider ml-auto px-3 py-2 bg-white rounded-lg border border-pink-100 shadow-sm active:scale-95 transition-transform"
                                     >
                                         Copy
                                     </button>
