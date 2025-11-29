@@ -506,8 +506,10 @@ const Home = () => {
               gap: 15px; 
               flex-direction: row; /* Keep horizontal on mobile */
               overflow-x: auto; /* Enable horizontal scroll */
+              overflow-y: hidden; /* Prevent vertical scroll hijack */
               scroll-snap-type: x mandatory; /* Snap behavior */
               -webkit-overflow-scrolling: touch; /* Smooth touch scroll */
+              touch-action: pan-x; /* Allow horizontal pan, let browser handle vertical */
           }
           
           .chapter-slide { 

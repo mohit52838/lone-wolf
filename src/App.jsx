@@ -32,7 +32,7 @@ function App() {
     <div className="flex flex-col min-h-screen">
       <ScrollToTop />
       <Navbar />
-      <main className={`flex-grow ${!isHomePage ? 'pt-24' : ''}`}>
+      <main className={`flex-grow ${!isHomePage ? 'pt-32 md:pt-28' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/chapters" element={<Chapters />} />

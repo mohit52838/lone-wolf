@@ -128,4 +128,16 @@ const Videos = () => {
     );
 };
 
+// Toggle body class for video modal
+useEffect(() => {
+    if (currentVideo) {
+        document.body.classList.add('video-open');
+    } else {
+        document.body.classList.remove('video-open');
+    }
+    return () => {
+        document.body.classList.remove('video-open');
+    };
+}, [currentVideo]);
+
 export default Videos;
