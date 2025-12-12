@@ -121,7 +121,7 @@ const ChapterPage = () => {
                                 </Link>
                             ) : <div></div>}
 
-                            {chapter.id < 10 ? (
+                            {chapter.id < chapters.length ? (
                                 <Link to={`/chapter/${chapter.id + 1}`} className="group flex flex-col items-end p-4 -mr-4 rounded-xl hover:bg-pink-50 transition-colors">
                                     <span className="text-xs text-slate-400 uppercase tracking-wider mb-1 font-bold">Next</span>
                                     <span className="text-slate-900 font-bold group-hover:text-brand-primary transition-colors flex items-center">

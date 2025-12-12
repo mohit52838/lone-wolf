@@ -192,7 +192,10 @@ const Home = () => {
 
                     // Calculate target scroll position
                     // Multiplier 3.0 for fast but controlled speed
-                    const scrollAmount = e.deltaY * 3.0;
+                    // Dynamic multiplier: Higher for trackpads (small delta), lower for mice (large delta)
+                    const isTrackpad = Math.abs(e.deltaY) < 50;
+                    const multiplier = isTrackpad ? 20.0 : 10.0;
+                    const scrollAmount = e.deltaY * multiplier;
                     const currentScroll = container.scrollLeft;
                     let targetScroll = currentScroll + scrollAmount;
 
