@@ -1,184 +1,203 @@
 @import "tailwindcss";
 
 :root {
-  /* HerHealth Theme - Strict Match */
-  --bg-color: #fff5fa;
-  /* Soft Pink */
-  --primary-pink: #e6007e;
-  /* Primary Pink */
-  --secondary-pink: #ff89b5;
-  /* Kept for gradients/accents */
-  --soft-pink: #ffccdd;
-  /* Baby Pink */
-  --bg-pink: #fff5fa;
-  --accent-blue: #e6007e;
-  /* Mapped to Primary for consistency */
-  --accent-cyan: #e6007e;
-  /* Mapped to Primary */
-  --accent-purple: #d63384;
-  /* Darker pink for contrast */
+  /* Flo-Inspired Warm Theme - Confidence Pass */
+  --bg-color: #FFF0F5; /* Lavender Blush base */
+  --bg-gradient: linear-gradient(180deg, #FFF0F5 0%, #FFF5F7 100%); /* Visibly warm start */
+  --bg-surface: #FFFFFF;
+  
+  --primary-color: #FF7A6E;
+  --primary-hover: #E55B5B;
+  
+  --secondary-color: #FDF2F8;
+  
+  /* High Confidence Contrast - Readability First */
+  --text-main: #020617; /* Slate 950 - Near Black */
+  --text-muted: #334155; /* Slate 700 - Dark Grey */
+  --text-light: #64748B; /* Slate 500 - Metadata only */
+  
+  --accent-teal: #319795; /* Soft Teal for trust/balance */
+  --accent-warm: #ED8936; /* Warm Orange for highlights */
 
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(230, 0, 126, 0.2);
+  /* Shadows - Soft & Diffused */
+  --shadow-sm: 0 2px 4px rgba(45, 55, 72, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(45, 55, 72, 0.08);
+  --shadow-lg: 0 10px 15px -3px rgba(45, 55, 72, 0.08);
 
-  --text-color: #1f2937;
-  /* Heading Color */
-  --text-body: #4b5563;
-
+  /* Fonts */
   --font-header: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
+}
 
-  /* Soft Pink Glow */
-  --neon-glow: 0 0 15px rgba(230, 0, 126, 0.3), 0 0 30px rgba(230, 0, 126, 0.1);
-  --tron-grid-color: rgba(230, 0, 126, 0.05);
+@layer utilities {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  /* Editorial Callout Label */
+  .prose blockquote::before {
+    content: 'KEY INSIGHT';
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  /* Content Blocks - Structure & Readability */
+  .myth-box {
+    background-color: #FFF5F5; /* Very subtle rose */
+    border-left: 3px solid #FDA4AF; /* rose-300 */
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .fact-box {
+    background-color: #F8FAFC; /* slate-50 */
+    border-left: 3px solid #64748B; /* slate-500 */
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 2.5rem;
+  }
+
+  .intro-text {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  /* --- EDUCATIONAL LIST STYLING --- */
+  /* Target lists inside prose that are likely definition lists */
+  .prose ul > li {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #F1F5F9; /* slate-100 */
+    margin-bottom: 0 !important; /* Override prose spacing */
+  }
+
+  .prose ul > li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  /* The "Label" part (e.g. "Partnership:") */
+  .prose ul > li > strong:first-child {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: block; /* Force new line */
+  }
+
+  /* The bullets themselves - optional, can remove if we want pure block alignment */
+  .prose ul {
+    list-style-type: none !important; /* We use blocks, no dots */
+  }
+  
+  /* Numbered lists (ordered) - Keep markers but style them */
+  .prose ol {
+    counter-reset: item;
+    padding-left: 0;
+  }
+  
+  .prose ol > li {
+    position: relative;
+    padding-left: 3rem;
+    margin-bottom: 2rem;
+  }
+  
+  .prose ol > li::before {
+    content: counter(item);
+    counter-increment: item;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 2rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
 }
 
 @theme {
-  --color-brand-primary: #e6007e;
-  --color-brand-secondary: #ff89b5;
-  --color-brand-accent: #ffccdd;
+  --color-brand-primary: #FF7A6E;
+  --color-brand-surface: #FFFFFF;
+  --color-brand-bg: #FFF9F5;
   --font-display: "Playfair Display", serif;
   --font-body: "Inter", sans-serif;
 }
 
 body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background: var(--bg-gradient);
+  background-attachment: fixed; /* Ensures gradient covers full scroll */
+  color: var(--text-main);
   font-family: var(--font-body);
-  overflow-x: hidden;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  opacity: 0;
-  animation: pageFadeIn 0.8s ease-out forwards;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes pageFadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes moving-gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Utility Classes */
-.text-gradient-pink {
-  background: linear-gradient(to right, var(--primary-pink), var(--secondary-pink));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Mobile Button Press Effect */
-button:active,
-.btn-primary:active,
-.btn-secondary:active,
-.nav-link:active {
-  transform: scale(0.95);
-}
-
-/* Scrollbar - Reverted to default to avoid overflow issues */
-
-/* Strict Prose Overrides for Content Restoration */
-.prose {
-  max-width: 65ch;
-  color: var(--text-body);
-  line-height: 1.75;
-}
-
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4 {
-  color: var(--text-color) !important;
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-header);
-  margin-top: 2em;
-  margin-bottom: 1em;
-  line-height: 1.3;
-}
-
-.prose h1 {
-  font-size: 2.25em;
-}
-
-.prose h2 {
-  font-size: 1.75em;
-  border-bottom: 2px solid var(--primary-pink);
-  padding-bottom: 0.3em;
-  display: inline-block;
-}
-
-.prose h3 {
-  font-size: 1.5em;
-  color: var(--primary-pink) !important;
-}
-
-.prose p {
-  margin-bottom: 1.5em;
-}
-
-.prose a {
-  color: var(--primary-pink) !important;
-  text-decoration: none;
-  border-bottom: 1px solid var(--primary-pink);
-  font-weight: 600;
-}
-
-.prose a:hover {
-  color: var(--secondary-pink) !important;
-  border-bottom-color: var(--secondary-pink);
-}
-
-.prose strong {
-  color: var(--text-color);
+  color: var(--text-main);
   font-weight: 700;
+  line-height: 1.2;
 }
 
-.prose ul {
-  list-style-type: disc;
-  padding-left: 1.625em;
-  margin-bottom: 1.5em;
+/* Button Reset & Base Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.prose ol {
-  list-style-type: decimal;
-  padding-left: 1.625em;
-  margin-bottom: 1.5em;
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: var(--shadow-sm);
 }
 
-.prose li {
-  margin-bottom: 0.5em;
-  padding-left: 0.375em;
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
-.prose ul>li::marker {
-  color: var(--primary-pink);
+.btn-secondary {
+  background-color: white;
+  color: var(--text-main);
+  border: 1px solid #E2E8F0;
+  box-shadow: var(--shadow-sm);
 }
 
-.prose blockquote {
-  border-left: 4px solid var(--primary-pink);
-  padding-left: 1em;
-  font-style: italic;
-  color: var(--text-body);
-  background: #fff0f5;
-  /* Light pink bg for quotes/tips */
-  padding: 1rem;
-  border-radius: 0 8px 8px 0;
-  margin-bottom: 1.5em;
+.btn-secondary:hover {
+  background-color: #F7FAFC;
+  border-color: #CBD5E0;
+}
+
+/* Utility Animations - Subtle Only */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
 }

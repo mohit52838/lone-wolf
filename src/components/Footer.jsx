@@ -4,12 +4,12 @@ import { FaHeart } from 'react-icons/fa';
 
 const Footer = () => {
     return (
-        <footer className="bg-white border-t border-pink-100 pt-8 pb-6 relative z-50">
+        <footer className="bg-white border-t border-[var(--secondary-color)] pt-8 pb-6 relative z-50">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
                     {/* Column 1: Brand & Mission */}
                     <div className="col-span-1">
-                        <Link to="/" className="text-xl font-extrabold text-brand-primary font-display tracking-tight flex items-center gap-2 mb-3">
+                        <Link to="/" className="text-xl font-extrabold text-[var(--primary-color)] font-display tracking-tight flex items-center gap-2 mb-3">
                             <span className="text-2xl">🌸</span> HerHealth
                         </Link>
                         <p className="text-slate-500 text-xs leading-relaxed max-w-xs">
@@ -21,12 +21,12 @@ const Footer = () => {
                     <div>
                         <h4 className="font-bold text-slate-900 mb-3 font-display text-base">Quick Links</h4>
                         <ul className="space-y-1 text-slate-500 text-xs">
-                            <li><Link to="/" className="hover:text-brand-primary transition-colors">Home</Link></li>
-                            <li><Link to="/chapters" className="hover:text-brand-primary transition-colors">Chapters</Link></li>
-                            <li><Link to="/videos" className="hover:text-brand-primary transition-colors">Videos</Link></li>
-                            <li><Link to="/resources" className="hover:text-brand-primary transition-colors">Resources</Link></li>
-                            <li><Link to="/find-doctors" className="hover:text-brand-primary transition-colors">Find Doctors</Link></li>
-                            <li><Link to="/about" className="hover:text-brand-primary transition-colors">About</Link></li>
+                            <li><Link to="/" className="hover:text-[var(--primary-color)] transition-colors">Home</Link></li>
+                            <li><Link to="/chapters" className="hover:text-[var(--primary-color)] transition-colors">Chapters</Link></li>
+                            <li><Link to="/videos" className="hover:text-[var(--primary-color)] transition-colors">Videos</Link></li>
+                            <li><Link to="/resources" className="hover:text-[var(--primary-color)] transition-colors">Resources</Link></li>
+                            <li><Link to="/find-doctors" className="hover:text-[var(--primary-color)] transition-colors">Find Doctors</Link></li>
+                            <li><Link to="/about" className="hover:text-[var(--primary-color)] transition-colors">About</Link></li>
                         </ul>
                     </div>
 

@@ -1,98 +1,70 @@
 import React from 'react';
-import PageHeader from '../components/PageHeader';
-import Card from '../components/Card';
+import { FaHeart, FaShieldAlt, FaLightbulb } from 'react-icons/fa';
 
 const About = () => {
     return (
-        <div className="min-h-screen pb-24 relative overflow-hidden">
-            {/* Background Decor */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-pink/10 rounded-full blur-3xl opacity-50 mix-blend-multiply animate-pulse"></div>
-                <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-lavender/20 rounded-full blur-3xl opacity-50 mix-blend-multiply"></div>
-            </div>
+        <div className="min-h-screen pt-32 pb-24">
+            <div className="max-w-5xl mx-auto px-6">
 
-            <PageHeader
-                title="About HerHealth"
-                subtitle="Empowering women through knowledge, community, and care."
-            />
-
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-                {/* Intro Section */}
-                <div className="max-w-4xl mx-auto text-center mb-20">
-                    <p className="text-2xl md:text-3xl text-[var(--text-body)] font-light leading-relaxed font-display">
-                        HerHealth was born from a simple belief: <br className="hidden md:block" />
-                        <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-pink)] to-[var(--accent-purple)]">
-                            Every woman deserves to understand her own body.
-                        </span>
-                    </p>
+                {/* Hero Section: Calm & Respectful */}
+                <div className="flex flex-col md:flex-row items-center gap-16 mb-32">
+                    <div className="w-full md:w-1/2 relative">
+                        <div className="absolute inset-0 bg-rose-100 rounded-[2rem] transform rotate-3 scale-95 opacity-50"></div>
+                        <img
+                            src="https://images.unsplash.com/photo-1516575150278-77136aed6920?auto=format&fit=crop&q=80&w=800"
+                            alt="Hands resting on a journal in sunlight"
+                            className="rounded-[2rem] shadow-lg w-full object-cover h-[500px] relative z-10"
+                        />
+                    </div>
+                    <div className="w-full md:w-1/2">
+                        <div className="inline-block px-4 py-1.5 bg-rose-100 text-rose-600 font-bold rounded-full text-sm mb-6 uppercase tracking-wider">
+                            Safe Space
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-bold text-[var(--text-main)] mb-8 font-display leading-tight">
+                            You are not alone. <br />You are <span className="text-rose-500">understood.</span>
+                        </h1>
+                        <p className="text-xl text-[var(--text-muted)] leading-relaxed mb-8">
+                            HerHealth is a quiet corner of the internet dedicated to you. No judgment, no confusing jargon—just clear, warm guidance for the body you live in.
+                        </p>
+                        <blockquote className="text-lg text-[var(--text-main)] font-medium border-l-4 border-rose-300 pl-6 italic">
+                            "We believe that understanding your health should feel like a conversation with a trusted friend, not a lecture."
+                        </blockquote>
+                    </div>
                 </div>
 
-                {/* Problem & Mission Grid */}
-                <div className="grid md:grid-cols-2 gap-12 lg:gap-20 mb-24 items-stretch">
-                    <Card title="The Problem" className="h-full">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-100 to-transparent rounded-full opacity-50 -mr-16 -mt-16 transition-transform duration-700 group-hover:scale-150 pointer-events-none"></div>
-                        <p className="text-lg text-[var(--text-body)] leading-relaxed relative z-10">
-                            For too long, women's health has been shrouded in silence, stigma, and misinformation. From the hush-hush nature of menstruation to the dismissal of pain in endometriosis, women often navigate their health journeys in the dark, feeling unheard and unsupported.
-                        </p>
-                    </Card>
+                {/* Why We Are Here - Letter Style */}
+                <div className="max-w-3xl mx-auto mb-24">
+                    <div className="bg-rose-50/50 p-10 md:p-14 rounded-3xl border border-rose-100 relative">
+                        {/* Decorative element resembling a letter stamp or fold could go here via CSS if desired, keeping it clean for now */}
 
-                    <Card title="Our Mission" className="h-full">
-                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-brand-pink/20 rounded-full blur-2xl opacity-40 -ml-16 -mb-16 transition-transform duration-700 group-hover:scale-150 pointer-events-none"></div>
-                        <p className="text-lg text-[var(--text-body)] leading-relaxed relative z-10">
-                            We exist to bridge the gap between medical jargon and daily life. We provide accurate, evidence-based, and judgment-free information to help you advocate for yourself in the doctor's office and at home. We are your partner in health.
-                        </p>
-                    </Card>
-                </div>
+                        <h2 className="text-2xl font-bold text-[var(--text-main)] mb-8 font-display">A Note to You</h2>
 
-                {/* Core Values Section */}
-                <div className="mb-24">
-                    <h3 className="text-4xl md:text-5xl font-bold text-[var(--text-color)] mb-16 text-center font-display">Our Core Values</h3>
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {/* Value 1 */}
-                        <Card title="Inclusivity" className="h-full">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-lavender/30 to-brand-purple/10 flex items-center justify-center text-[var(--accent-purple)] mb-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                            </div>
-                            <p className="text-[var(--text-body)] leading-relaxed">
-                                We serve all women and people with uteruses. Our community is a safe space for everyone, regardless of background or identity.
+                        <div className="prose prose-lg prose-p:text-[var(--text-muted)] prose-p:leading-loose">
+                            <p className="font-medium text-rose-800">Dear Reader,</p>
+                            <p>
+                                Navigating women's health can sometimes feel like solving a puzzle without all the pieces. Whether it's unexplained pain, a cycle that keeps changing, or simply the desire to know <em>more</em>, we know it can be overwhelming.
                             </p>
-                        </Card>
-
-                        {/* Value 2 */}
-                        <Card title="Accuracy" className="h-full">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 flex items-center justify-center text-blue-600 mb-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <p className="text-[var(--text-body)] leading-relaxed">
-                                Trust is everything. Our content is rigorously researched and referenced from WHO, CDC, and ACOG guidelines.
+                            <p>
+                                That's why we're here. To validate your questions. To respect your experiences. To provide you with knowledge that empowers you to walk into any medical appointment with confidence.
                             </p>
-                        </Card>
-
-                        {/* Value 3 */}
-                        <Card title="Empathy" className="h-full">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100/50 flex items-center justify-center text-[var(--primary-pink)] mb-6">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <p className="text-[var(--text-body)] leading-relaxed">
-                                We understand that health is emotional as well as physical. We approach every topic with compassion and care.
+                            <p>
+                                You deserve to feel at home in your own body.
                             </p>
-                        </Card>
+                            <p className="italic text-rose-800 mt-8">
+                                With care,<br />
+                                <span className="font-display font-bold not-italic text-lg">The HerHealth Team</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
 
                 {/* Disclaimer */}
-                <div className="max-w-4xl mx-auto border-t border-gray-200/50 pt-12 text-center">
-                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Medical Disclaimer</h3>
-                    <p className="text-sm text-gray-500 italic leading-relaxed">
-                        The information provided on HerHealth is for educational purposes only. It is not intended to be a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition.
+                <div className="text-center max-w-2xl mx-auto opacity-60">
+                    <p className="text-sm text-[var(--text-light)]">
+                        Medical Disclaimer: The information provided on HerHealth is for educational purposes only. Always seek the advice of your physician.
                     </p>
                 </div>
+
             </div>
         </div>
     );

@@ -71,7 +71,7 @@ const VideoCard = ({ video, onPlay, isSaved, onToggleSave }) => {
                         </span>
                     )}
                     {!video.official && video.expertVerified && (
-                        <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full" title="Expert Verified">
+                        <span className="bg-rose-50 text-rose-600 text-[9px] font-bold px-2 py-0.5 rounded-full border border-rose-100" title="Expert Verified">
                             Expert
                         </span>
                     )}

@@ -1,123 +1,89 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import VideoGrid from '../components/VideoGrid';
 import VideoModal from '../components/VideoModal';
-import VideosSidebar from '../components/VideosSidebar';
 import videosData from '../data/videos.json';
 
 const Videos = () => {
     const [videos, setVideos] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('All');
-    const [showOfficialOnly, setShowOfficialOnly] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentVideo, setCurrentVideo] = useState(null);
-    const [savedIds, setSavedIds] = useState([]);
     const [categories, setCategories] = useState([]);
 
-    // Load data and saved videos
     useEffect(() => {
         setVideos(videosData);
-
-        // Extract unique categories
-        const uniqueCategories = [...new Set(videosData.map(v => v.category))].sort();
+        const uniqueCategories = ['All', ...new Set(videosData.map(v => v.category))].sort();
         setCategories(uniqueCategories);
-
-        // Load saved videos from localStorage
-        const saved = localStorage.getItem('herhealth_watch_later');
-        if (saved) {
-            setSavedIds(JSON.parse(saved));
-        }
     }, []);
 
-    // Handle Watch Later toggle
-    const handleToggleSave = (id) => {
-        const newSavedIds = savedIds.includes(id)
-            ? savedIds.filter(savedId => savedId !== id)
-            : [...savedIds, id];
-
-        setSavedIds(newSavedIds);
-        localStorage.setItem('herhealth_watch_later', JSON.stringify(newSavedIds));
-    };
-
-    // Filter videos
     const filteredVideos = useMemo(() => {
         return videos.filter(video => {
-            // Category filter
             if (selectedCategory !== 'All' && video.category !== selectedCategory) return false;
 
-            // Official filter
-            if (showOfficialOnly && !video.official) return false;
-
-            // Search filter
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 return (
                     video.title.toLowerCase().includes(query) ||
-                    video.description.toLowerCase().includes(query) ||
-                    video.tags.some(tag => tag.toLowerCase().includes(query))
+                    video.description.toLowerCase().includes(query)
                 );
             }
-
             return true;
         });
-    }, [videos, selectedCategory, showOfficialOnly, searchQuery]);
+    }, [videos, selectedCategory, searchQuery]);
 
     return (
-        <div className="min-h-screen bg-[#fff5fa] pt-32 pb-12 px-4 sm:px-6 lg:px-8 font-poppins">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen pt-32 pb-24">
+            <div className="max-w-6xl mx-auto px-6">
+
                 {/* Header */}
-                <div className="mb-8 text-center md:text-left">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                        <span className="text-[#e6007e]">Videos</span> & Tutorials
-                    </h1>
-                    <p className="text-gray-600 max-w-2xl">
-                        Curated educational content from trusted sources like WHO, health ministries, and medical experts.
+                <div className="mb-16">
+                    <span className="text-xs font-bold tracking-widest text-rose-500 uppercase mb-4 block">Visual Library</span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Videos & Tutorials</h1>
+                    <p className="text-xl text-gray-500 font-light max-w-2xl leading-relaxed">
+                        Verified educational content from trusted health sources.
                     </p>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Sidebar (Desktop) */}
-                    <div className="w-full lg:w-1/4 flex-shrink-0">
-                        <VideosSidebar
-                            categories={categories}
-                            selectedCategory={selectedCategory}
-                            onSelectCategory={setSelectedCategory}
-                            showOfficialOnly={showOfficialOnly}
-                            onToggleOfficial={setShowOfficialOnly}
-                            searchQuery={searchQuery}
-                            onSearchChange={setSearchQuery}
-                        />
+                {/* Filters */}
+                <div className="mb-12 flex flex-col md:flex-row gap-8 md:items-center justify-between">
+                    {/* Category Tabs */}
+                    <div className="flex flex-wrap gap-x-6 gap-y-3">
+                        {categories.map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === cat
+                                        ? 'bg-rose-500 text-white shadow-md'
+                                        : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 hover:border-gray-200'
+                                    }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
                     </div>
 
-                    {/* Main Content */}
-                    <div className="flex-1">
-                        {/* Active Filters Summary (Mobile/Tablet mainly) */}
-                        <div className="mb-4 flex flex-wrap gap-2 items-center">
-                            <span className="text-sm text-gray-500">Showing {filteredVideos.length} videos</span>
-                            {selectedCategory !== 'All' && (
-                                <span className="bg-pink-100 text-[#e6007e] text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                                    {selectedCategory}
-                                    <button onClick={() => setSelectedCategory('All')} className="hover:text-pink-900">×</button>
-                                </span>
-                            )}
-                            {showOfficialOnly && (
-                                <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                                    Official Only
-                                    <button onClick={() => setShowOfficialOnly(false)} className="hover:text-green-900">×</button>
-                                </span>
-                            )}
-                        </div>
-
-                        <VideoGrid
-                            videos={filteredVideos}
-                            onPlay={setCurrentVideo}
-                            savedIds={savedIds}
-                            onToggleSave={handleToggleSave}
-                        />
-                    </div>
+                    {/* Simple Search */}
+                    <input
+                        type="text"
+                        placeholder="Search videos..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="bg-white border border-gray-200 rounded-full px-6 py-2.5 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all w-full md:w-64"
+                    />
                 </div>
+
+                {/* Content */}
+                <div>
+                    <VideoGrid
+                        videos={filteredVideos}
+                        onPlay={setCurrentVideo}
+                        savedIds={[]}
+                        onToggleSave={() => { }}
+                    />
+                </div>
+
             </div>
 
-            {/* Video Modal */}
             {currentVideo && (
                 <VideoModal
                     video={currentVideo}

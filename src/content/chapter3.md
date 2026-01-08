@@ -5,7 +5,9 @@ Reproductive health issues like endometriosis and fibroids are often dismissed a
 
 ## Endometriosis
 ### What is it?
+<p class="intro-text">
 Endometriosis is a chronic condition where tissue *similar* to the lining of the uterus (endometrium) grows outside the uterus—on the ovaries, fallopian tubes, bowel, or bladder. Like the uterine lining, this tissue thickens, breaks down, and bleeds with each menstrual cycle. However, because it has no way to exit the body, it becomes trapped, causing inflammation, scar tissue (adhesions), and cysts.
+</p>
 
 ### Symptoms
 *   **Dysmenorrhea:** Intense pelvic pain before and during periods.

@@ -79,12 +79,12 @@ const VideosSidebar = ({
             </div>
 
             {/* Quick Tip */}
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+            <div className="bg-rose-50 rounded-lg p-4 border border-rose-100">
                 <div className="flex items-start gap-2">
-                    <FaUserMd className="text-blue-500 mt-0.5" />
+                    <FaUserMd className="text-rose-500 mt-0.5" />
                     <div>
-                        <h4 className="text-xs font-bold text-blue-800 mb-1">Expert Verified</h4>
-                        <p className="text-[11px] text-blue-700 leading-relaxed">
+                        <h4 className="text-xs font-bold text-gray-900 mb-1">Expert Verified</h4>
+                        <p className="text-[11px] text-gray-600 leading-relaxed">
                             We prioritize content from WHO, government health ministries, and certified medical professionals.
                         </p>
                     </div>

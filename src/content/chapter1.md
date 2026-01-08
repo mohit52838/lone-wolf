@@ -4,7 +4,9 @@
 The menstrual cycle is a vital sign of overall health, not just a reproductive function. This chapter provides a comprehensive understanding of the biological processes, hygiene practices, and indicators of health versus illness. Understanding your cycle empowers you to detect abnormalities early and manage your well-being effectively.
 
 ## Medical Explanation: The Biology
+<p class="intro-text">
 The menstrual cycle is a complex feedback loop involving the brain (hypothalamus and pituitary gland), ovaries, and uterus. It prepares the body for potential pregnancy each month.
+</p>
 
 ### The Four Phases
 1.  **Menstrual Phase (Days 1-5):**
