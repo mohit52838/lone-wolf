@@ -106,7 +106,7 @@ const Resources = () => {
                     </h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {helplines.map((line, idx) => (
-                            <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                            <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-500 ease-out hover:-translate-y-2">
                                 <h3 className="font-bold text-lg text-slate-900 mb-2">{line.name}</h3>
                                 <p className="text-sm text-slate-500 mb-6 h-10 leading-relaxed">{line.desc}</p>
                                 <div className="flex items-center justify-between bg-pink-50 rounded-xl p-4 border border-pink-100">
@@ -133,7 +133,7 @@ const Resources = () => {
                     </h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {apps.map((app, idx) => (
-                            <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex flex-col">
+                            <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-500 ease-out hover:-translate-y-2 flex flex-col">
                                 <div className="flex justify-between items-start mb-4">
                                     <h3 className="font-bold text-xl text-slate-900">{app.name}</h3>
                                     <a href={app.web} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-brand-primary transition-colors">

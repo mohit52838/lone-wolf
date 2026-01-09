@@ -68,7 +68,7 @@ const ToolsTrackersSection = () => {
                         >
                             <Link
                                 to={tool.link}
-                                className="group block h-full bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-[var(--secondary-color)]"
+                                className="group block h-full bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 ease-out border border-[var(--secondary-color)]"
                             >
                                 <div className={`w-12 h-12 rounded-xl ${tool.color} flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform duration-300`}>
                                     {tool.icon}

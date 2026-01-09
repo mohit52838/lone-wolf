@@ -32,17 +32,20 @@ const Navbar = () => {
 
     return (
         <nav
-            className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md shadow-sm py-3 border-b border-gray-100`}
+            className={`fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 transition-all duration-300 rounded-full border border-white/20 px-6 py-3 ${scrolled
+                ? 'bg-white/80 backdrop-blur-md shadow-md py-3'
+                : 'bg-white/40 backdrop-blur-sm shadow-sm py-4'
+                }`}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="w-full">
                 <div className="flex items-center justify-between">
 
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 group">
-                        <div className="bg-[var(--secondary-color)] p-2 rounded-full text-[var(--primary-color)] group-hover:bg-red-50 transition-colors">
+                        <div className="bg-[var(--secondary-color)] p-2 rounded-full text-[var(--primary-color)] transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-[20deg] group-hover:scale-110 group-hover:bg-rose-50">
                             <FaHeartbeat className="text-xl" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-[var(--text-main)] font-display">
+                        <span className="text-xl font-bold tracking-tight text-[var(--text-main)] font-display transition-colors duration-300 group-hover:text-rose-700">
                             Her<span className="text-[var(--primary-color)]">Health</span>
                         </span>
                     </Link>
@@ -53,12 +56,13 @@ const Navbar = () => {
                             <Link
                                 key={link.name}
                                 to={link.path}
-                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${location.pathname === link.path
-                                    ? 'bg-[var(--secondary-color)] text-[var(--primary-color)]'
-                                    : 'text-[var(--text-muted)] hover:bg-gray-50 hover:text-[var(--text-main)]'
+                                className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-out overflow-hidden group ${location.pathname === link.path
+                                    ? 'bg-[var(--secondary-color)] text-[var(--primary-color)] shadow-sm'
+                                    : 'text-[var(--text-muted)] hover:text-rose-600'
                                     }`}
                             >
-                                {link.name}
+                                <span className={`absolute inset-0 bg-rose-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${location.pathname === link.path ? 'hidden' : ''}`}></span>
+                                <span className="relative z-10">{link.name}</span>
                             </Link>
                         ))}
                     </div>

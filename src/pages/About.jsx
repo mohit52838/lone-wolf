@@ -34,7 +34,7 @@ const About = () => {
 
                 {/* Why We Are Here - Letter Style */}
                 <div className="max-w-3xl mx-auto mb-24">
-                    <div className="bg-rose-50/50 p-10 md:p-14 rounded-3xl border border-rose-100 relative">
+                    <div className="bg-rose-50/50 p-10 md:p-14 rounded-3xl border border-rose-100 relative transition-all duration-500 ease-out hover:shadow-xl hover:-translate-y-2 hover:bg-rose-50">
                         {/* Decorative element resembling a letter stamp or fold could go here via CSS if desired, keeping it clean for now */}
 
                         <h2 className="text-2xl font-bold text-[var(--text-main)] mb-8 font-display">A Note to You</h2>
