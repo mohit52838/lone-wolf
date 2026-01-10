@@ -7,6 +7,13 @@ const HeroSection = () => {
     const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
     const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
 
+    // State to track if any button is hovered
+    const [isHovered, setIsHovered] = React.useState(false);
+
+    // Handlers
+    const handleMouseEnter = () => setIsHovered(true);
+    const handleMouseLeave = () => setIsHovered(false);
+
     return (
         <section ref={sectionRef} className="relative w-full h-[90vh] md:h-screen flex items-center justify-center overflow-hidden bg-[#FFF9F5]">
             <div className="container mx-auto px-6 md:px-12 grid md:grid-cols-2 gap-12 items-center relative z-10 w-full max-w-7xl">
@@ -18,7 +25,7 @@ const HeroSection = () => {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="order-2 md:order-1 text-center md:text-left"
                 >
-                    <span className="inline-block py-1 px-3 mb-6 bg-red-100 text-[var(--primary-color)] text-sm font-bold tracking-wide rounded-full uppercase">
+                    <span className="inline-block py-2 px-4 mb-6 text-sm font-bold tracking-wide rounded-full uppercase" style={{ backgroundColor: 'var(--secondary-color)', color: 'var(--primary-color)' }}>
                         Evidence-based Approach
                     </span>
 
@@ -31,10 +38,20 @@ const HeroSection = () => {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                        <Link to="/chapters" className="btn btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all">
+                        <Link
+                            to="/chapters"
+                            className="btn btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all !border-2 !border-transparent hover:!border-[var(--secondary-color)] box-border"
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                        >
                             Start Learning
                         </Link>
-                        <Link to="/resources#symptom-tracker" className="btn btn-secondary text-lg px-8 py-4">
+                        <Link
+                            to="/resources#symptom-tracker"
+                            className="btn btn-secondary text-lg px-8 py-4 !border-2 !border-transparent hover:!border-[var(--primary-color)] box-border transition-all"
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                        >
                             Track Symptoms
                         </Link>
                     </div>
@@ -55,7 +72,7 @@ const HeroSection = () => {
                 </motion.div>
 
                 {/* Visual Side - Natural, Warm Image */}
-                <div className="order-1 md:order-2 relative h-[400px] md:h-[600px] w-full items-center justify-center hidden md:flex">
+                <div className="order-1 md:order-2 relative h-[400px] md:h-[600px] w-full items-center justify-center hidden md:flex translate-y-12">
                     <motion.div
                         style={{ y }}
                         className="relative w-full h-full"
@@ -65,21 +82,28 @@ const HeroSection = () => {
                             <img
                                 src="https://images.unsplash.com/photo-1542596594-649edbc13630?q=80&w=1887&auto=format&fit=crop"
                                 alt="Happy woman in sunlight"
-                                className="w-full h-full object-cover"
+                                className={`w-full h-full object-cover transition-all duration-700 ease-in-out ${isHovered ? 'brightness-105 saturate-120 hue-rotate-15' : ''}`}
                             />
-                            {/* Soft warm overlay */}
-                            <div className="absolute inset-0 bg-[var(--primary-color)] mix-blend-color opacity-20"></div>
+                            {/* Warm Overlay (Default) */}
+                            <div
+                                className={`absolute inset-0 bg-[var(--primary-color)] mix-blend-color transition-opacity duration-700 ease-in-out ${isHovered ? 'opacity-0' : 'opacity-20'}`}
+                            ></div>
+
+                            {/* Cool Overlay (Hover) */}
+                            <div
+                                className={`absolute inset-0 bg-blue-400 mix-blend-color transition-opacity duration-700 ease-in-out ${isHovered ? 'opacity-40' : 'opacity-0'}`}
+                            ></div>
                         </div>
 
                         {/* Decorative Element */}
-                        <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-[#FEE2E2] rounded-full mix-blend-multiply filter blur-2xl opacity-70"></div>
-                        <div className="absolute -top-6 -right-6 w-32 h-32 bg-[#FFEDD5] rounded-full mix-blend-multiply filter blur-2xl opacity-70"></div>
+                        <div className={`absolute -bottom-6 -left-6 w-32 h-32 rounded-full mix-blend-multiply filter blur-2xl opacity-70 transition-colors duration-700 ${isHovered ? 'bg-[#CBE5FE]' : 'bg-[#FEE2E2]'}`}></div>
+                        <div className={`absolute -top-6 -right-6 w-32 h-32 rounded-full mix-blend-multiply filter blur-2xl opacity-70 transition-colors duration-700 ${isHovered ? 'bg-[#E0F2FE]' : 'bg-[#FFEDD5]'}`}></div>
                     </motion.div>
                 </div>
             </div>
 
             {/* Background Blob for warmth */}
-            <div className="absolute top-0 right-0 w-[50%] h-[100%] bg-gradient-to-l from-[#FFF0E6] to-transparent -z-0 opacity-60"></div>
+            <div className={`absolute top-0 right-0 w-[50%] h-[100%] bg-gradient-to-l -z-0 opacity-60 transition-colors duration-700 ${isHovered ? 'from-[#E0F7FA] to-transparent' : 'from-[#FFF0E6] to-transparent'}`}></div>
         </section>
     );
 };

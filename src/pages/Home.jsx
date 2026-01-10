@@ -2,7 +2,7 @@ import React, { useLayoutEffect } from 'react';
 import HeroSection from '../components/HeroSection';
 import MissionSection from '../components/MissionSection';
 import ChaptersSlider from '../components/ChaptersSlider';
-import TrustSection from '../components/TrustSection';
+
 import ToolsTrackersSection from '../components/ToolsTrackersSection';
 import { chapters } from '../data/chapters';
 
@@ -26,8 +26,7 @@ const Home = () => {
             {/* 4. Tools & Trackers: Useful resources */}
             <ToolsTrackersSection />
 
-            {/* 5. Trust: Medical Credibility */}
-            <TrustSection />
+
         </div>
     );
 };

@@ -1,5 +1,7 @@
 import React from 'react';
 import { FaHeart, FaShieldAlt, FaLightbulb } from 'react-icons/fa';
+import Card from '../components/Card';
+import TrustSection from '../components/TrustSection';
 
 const About = () => {
     return (
@@ -21,7 +23,7 @@ const About = () => {
                             Safe Space
                         </div>
                         <h1 className="text-4xl md:text-6xl font-bold text-[var(--text-main)] mb-8 font-display leading-tight">
-                            You are not alone. <br />You are <span className="text-rose-500">understood.</span>
+                            You are not alone. <br />You are <span className="text-[var(--primary-color)]">understood.</span>
                         </h1>
                         <p className="text-xl text-[var(--text-muted)] leading-relaxed mb-8">
                             HerHealth is a quiet corner of the internet dedicated to you. No judgment, no confusing jargon—just clear, warm guidance for the body you live in.
@@ -34,37 +36,40 @@ const About = () => {
 
                 {/* Why We Are Here - Letter Style */}
                 <div className="max-w-3xl mx-auto mb-24">
-                    <div className="bg-rose-50/50 p-10 md:p-14 rounded-3xl border border-rose-100 relative transition-all duration-500 ease-out hover:shadow-xl hover:-translate-y-2 hover:bg-rose-50">
-                        {/* Decorative element resembling a letter stamp or fold could go here via CSS if desired, keeping it clean for now */}
+                    <Card className="md:!p-8 !p-5 bg-white border border-[var(--secondary-pink)] shadow-sm relative" title={null}>
+                        <div className="relative z-10">
+                            <h2 className="text-3xl font-bold text-gray-900 mb-3 font-display">A Note to You</h2>
 
-                        <h2 className="text-2xl font-bold text-[var(--text-main)] mb-8 font-display">A Note to You</h2>
-
-                        <div className="prose prose-lg prose-p:text-[var(--text-muted)] prose-p:leading-loose">
-                            <p className="font-medium text-rose-800">Dear Reader,</p>
-                            <p>
-                                Navigating women's health can sometimes feel like solving a puzzle without all the pieces. Whether it's unexplained pain, a cycle that keeps changing, or simply the desire to know <em>more</em>, we know it can be overwhelming.
-                            </p>
-                            <p>
-                                That's why we're here. To validate your questions. To respect your experiences. To provide you with knowledge that empowers you to walk into any medical appointment with confidence.
-                            </p>
-                            <p>
-                                You deserve to feel at home in your own body.
-                            </p>
-                            <p className="italic text-rose-800 mt-8">
-                                With care,<br />
-                                <span className="font-display font-bold not-italic text-lg">The HerHealth Team</span>
-                            </p>
+                            <div className="prose prose-lg prose-p:text-gray-900 prose-p:leading-snug prose-p:font-medium">
+                                <p className="text-[var(--primary-color)] font-bold text-xl mb-0">Dear Reader,</p>
+                                <p className="mb-1">
+                                    Navigating women's health can sometimes feel like solving a puzzle without all the pieces. Whether it's unexplained pain, a cycle that keeps changing, or simply the desire to know more, we know it can be overwhelming.
+                                </p>
+                                <p className="mb-1">
+                                    That's why we're here. To validate your questions. To respect your experiences. To provide you with knowledge that empowers you to walk into any medical appointment with confidence.
+                                </p>
+                                <p className="text-black font-bold mb-2">
+                                    You deserve to feel at home in your own body.
+                                </p>
+                                <p className="text-[var(--primary-color)] italic text-lg mt-1 border-t border-gray-100 pt-2">
+                                    With care,<br />
+                                    <span className="font-display font-bold not-italic text-2xl">The HerHealth Team</span>
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    </Card>
                 </div>
 
-                {/* Disclaimer */}
-                <div className="text-center max-w-2xl mx-auto opacity-60">
-                    <p className="text-sm text-[var(--text-light)]">
-                        Medical Disclaimer: The information provided on HerHealth is for educational purposes only. Always seek the advice of your physician.
-                    </p>
-                </div>
+            </div>
 
+            {/* Trust & Sources Section */}
+            <TrustSection />
+
+            {/* Disclaimer */}
+            <div className="text-center max-w-2xl mx-auto opacity-60">
+                <p className="text-sm text-[var(--text-light)]">
+                    Medical Disclaimer: The information provided on HerHealth is for educational purposes only. Always seek the advice of your physician.
+                </p>
             </div>
         </div>
     );

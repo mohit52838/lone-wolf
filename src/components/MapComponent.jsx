@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
 // Custom Icons
 const createIcon = (url) => new L.Icon({
     iconUrl: url,
-    iconSize: [28, 28],
+    iconSize: [28, 28], // Reduced from 40x40
     iconAnchor: [14, 28],
     popupAnchor: [0, -30],
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -40,7 +40,7 @@ const createClusterCustomIcon = (cluster) => {
     return L.divIcon({
         html: `<div class="cluster-inner">${cluster.getChildCount()}</div>`,
         className: 'marker-cluster-custom',
-        iconSize: L.point(32, 32, true),
+        iconSize: L.point(32, 32, true), // Reduced from 40x40
         iconAnchor: [16, 16]
     });
 };
@@ -87,7 +87,7 @@ const RecenterButton = ({ userLocation }) => {
             <div className="leaflet-control">
                 <button
                     onClick={handleRecenter}
-                    className="bg-white text-gray-700 hover:text-rose-500 w-[34px] h-[34px] flex items-center justify-center shadow-md rounded-md transition-colors"
+                    className="bg-white text-gray-700 hover:text-[#e6007e] w-[34px] h-[34px] flex items-center justify-center shadow-md rounded-md transition-colors"
                     title="Recenter Map"
                     style={{ marginBottom: '80px', marginRight: '10px', pointerEvents: 'auto' }}
                 >
@@ -111,16 +111,16 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                 }}
             >
                 <Popup>
-                    <div className="font-sans min-w-[220px] p-1">
+                    <div className="font-poppins min-w-[220px] p-1">
                         <div className="flex items-center gap-2 mb-2">
-                            <span className="p-1.5 rounded-full bg-rose-50 text-rose-500">
+                            <span className="p-1.5 rounded-full bg-pink-50 text-[#e6007e]">
                                 {marker.type === 'Gynecologist' ? <FaUserMd /> :
                                     marker.type === 'Hospital' ? <FaHospital /> :
                                         <FaClinicMedical />}
                             </span>
                             <div>
-                                <h3 className="font-bold text-gray-900 text-sm leading-tight">{marker.name}</h3>
-                                <p className="text-[10px] font-bold uppercase tracking-wide text-rose-500">{marker.type}</p>
+                                <h3 className="font-bold text-gray-800 text-sm leading-tight">{marker.name}</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-wide text-[#e6007e]">{marker.type}</p>
                             </div>
                         </div>
                         <p className="text-xs text-gray-600 mb-3 leading-relaxed">{marker.address}</p>
@@ -128,7 +128,7 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                             href={`https://www.google.com/maps/dir/?api=1&destination=${marker.lat},${marker.lon}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex w-full bg-rose-500 text-white py-2 rounded-lg text-xs font-bold hover:bg-rose-600 transition-colors items-center justify-center gap-1 shadow-sm"
+                            className="flex w-full bg-[#e6007e] text-white py-2 rounded-lg text-xs font-semibold hover:bg-[#cc0070] transition-colors items-center justify-center gap-1"
                         >
                             <FaDirections /> Get Directions
                         </a>
@@ -157,11 +157,11 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                 {userLocation && (
                     <Marker
                         position={userLocation}
-                        icon={L.divIcon({ className: 'user-location-marker', iconSize: [32, 32] })}
+                        icon={L.divIcon({ className: 'user-location-marker', iconSize: [32, 32] })} // Increased from 20x20
                     >
                         <Popup>
-                            <div className="font-sans">
-                                <h3 className="font-bold text-rose-500">You are here</h3>
+                            <div className="font-poppins">
+                                <h3 className="font-bold text-[#e6007e]">You are here</h3>
                             </div>
                         </Popup>
                     </Marker>
@@ -186,7 +186,7 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                 <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000]">
                     <button
                         onClick={onSearchArea}
-                        className="bg-white text-rose-500 px-5 py-2.5 rounded-full shadow-lg font-bold text-sm flex items-center gap-2 hover:bg-rose-50 hover:scale-105 transition-all animate-fade-in border border-rose-100"
+                        className="bg-white text-[#e6007e] px-5 py-2.5 rounded-full shadow-lg font-bold text-sm flex items-center gap-2 hover:bg-gray-50 hover:scale-105 transition-all animate-fade-in-up border border-pink-100"
                     >
                         <FaSearchLocation />
                         Search this area

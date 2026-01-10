@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaStethoscope, FaUserMd, FaPlayCircle, FaArrowRight, FaFilePdf } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import Card from './Card';
 
 const ToolsTrackersSection = () => {
     const tools = [
@@ -66,26 +67,30 @@ const ToolsTrackersSection = () => {
                             transition={{ delay: tool.delay, duration: 0.5 }}
                             viewport={{ once: true }}
                         >
-                            <Link
-                                to={tool.link}
-                                className="group block h-full bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 ease-out border border-[var(--secondary-color)]"
-                            >
-                                <div className={`w-12 h-12 rounded-xl ${tool.color} flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                                    {tool.icon}
-                                </div>
+                            <Card className="h-full !p-6" title={null}>
+                                <Link
+                                    to={tool.link}
+                                    className="group block h-full relative z-10"
+                                >
+                                    <div className="flex flex-col h-full">
+                                        <div className={`w-12 h-12 rounded-xl ${tool.color} flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                                            {tool.icon}
+                                        </div>
 
-                                <h3 className="text-xl font-bold text-[var(--text-main)] mb-2 font-display">
-                                    {tool.title}
-                                </h3>
+                                        <h3 className="text-xl font-bold text-[var(--text-main)] mb-2 font-display group-hover:text-[var(--primary-color)] transition-colors">
+                                            {tool.title}
+                                        </h3>
 
-                                <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-6">
-                                    {tool.description}
-                                </p>
+                                        <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-6">
+                                            {tool.description}
+                                        </p>
 
-                                <div className="mt-auto flex items-center text-sm font-semibold text-[var(--primary-color)] group-hover:translate-x-1 transition-transform">
-                                    Try Tool <FaArrowRight className="ml-2 text-xs" />
-                                </div>
-                            </Link>
+                                        <div className="mt-auto flex items-center text-sm font-semibold text-[var(--primary-color)] group-hover:translate-x-1 transition-transform">
+                                            Try Tool <FaArrowRight className="ml-2 text-xs" />
+                                        </div>
+                                    </div>
+                                </Link>
+                            </Card>
                         </motion.div>
                     ))}
                 </div>

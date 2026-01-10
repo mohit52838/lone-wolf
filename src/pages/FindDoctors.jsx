@@ -101,7 +101,7 @@ const FindDoctors = () => {
         <div className="min-h-screen pt-32 pb-10 px-4 sm:px-6 lg:px-8 font-sans h-screen flex flex-col">
 
             <div className="max-w-7xl mx-auto w-full mb-6 flex-shrink-0">
-                <span className="text-xs font-bold tracking-widest text-rose-500 uppercase mb-2 block">Care Finder</span>
+                <span className="text-xs font-bold tracking-widest text-[var(--primary-color)] uppercase mb-2 block">Care Finder</span>
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Find a Doctor</h1>
             </div>
 

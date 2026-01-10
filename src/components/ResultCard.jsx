@@ -4,10 +4,10 @@ import { FaMapMarkerAlt, FaDirections, FaHospital, FaUserMd, FaClinicMedical } f
 const ResultCard = ({ facility, isSelected, onClick }) => {
     const getIcon = (type) => {
         switch (type) {
-            case 'Gynecologist': return <FaUserMd className="text-rose-500" />;
-            case 'Hospital': return <FaHospital className="text-rose-500" />;
-            case 'Clinic': return <FaClinicMedical className="text-rose-500" />;
-            default: return <FaMapMarkerAlt className="text-rose-500" />;
+            case 'Gynecologist': return <FaUserMd className="text-[var(--primary-color)]" />;
+            case 'Hospital': return <FaHospital className="text-[var(--primary-color)]" />;
+            case 'Clinic': return <FaClinicMedical className="text-[var(--primary-color)]" />;
+            default: return <FaMapMarkerAlt className="text-[var(--primary-color)]" />;
         }
     };
 
@@ -23,14 +23,14 @@ const ResultCard = ({ facility, isSelected, onClick }) => {
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && onClick()}
             className={`p-4 rounded-2xl cursor-pointer transition-all duration-300 border mb-3 ${isSelected
-                ? 'bg-rose-50 border-rose-200 shadow-md transform scale-[1.02]'
-                : 'bg-white border-gray-100 hover:border-rose-100 hover:shadow-soft'
+                ? 'bg-[var(--secondary-color)] border-rose-200 shadow-md transform scale-[1.02]'
+                : 'bg-white border-gray-100 hover:border-[var(--secondary-pink)] hover:shadow-soft'
                 }`}
         >
             <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
                     <h3 className="font-bold text-gray-900 text-sm leading-tight mb-1">{facility.name}</h3>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-rose-50 text-rose-500 border border-rose-100`}>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-[var(--secondary-color)] text-[var(--primary-color)] border border-[var(--secondary-pink)]`}>
                         <span className="mr-1.5">{getIcon(facility.type)}</span>
                         {facility.type}
                     </span>

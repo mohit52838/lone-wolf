@@ -1,41 +1,60 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaArrowRight } from 'react-icons/fa';
+import { gsap } from 'gsap';
+import Card from './Card'; // Use the ported legacy Card
 
 const ChaptersSlider = ({ chapters = [] }) => {
-    // Show top 8 chapters
-    const displayChapters = chapters.slice(0, 8);
+    // Show top 13 chapters (Parity: Increase from 8)
+    const displayChapters = chapters.slice(0, 13);
 
-    // Horizontal Scroll with Smart Multiplier (Recreated from old site)
+    // Horizontal Scroll with Smart Multiplier & GSAP Smoothing (Legacy Parity)
     React.useEffect(() => {
         const container = document.getElementById('chapters-scroll-container');
         if (!container) return;
 
         const handleWheel = (e) => {
-            if (e.deltaY === 0) return;
+            // Only hijack scroll if we have horizontal content to scroll
+            if (container.scrollWidth > container.clientWidth) {
+                // Dynamic multiplier: Higher for trackpads (small delta), lower for mice (large delta)
+                const isTrackpad = Math.abs(e.deltaY) < 50;
+                const multiplier = isTrackpad ? 20.0 : 10.0; // Match legacy multiplier
+                const scrollAmount = e.deltaY * multiplier;
+                const currentScroll = container.scrollLeft;
+                const maxScroll = container.scrollWidth - container.clientWidth;
 
-            // Prevent vertical scroll if we are scrolling horizontally
-            // But usually we only prevent default if we actually scroll
-            // The old site "released" scroll at boundaries.
+                // Check if we are at the boundaries and trying to scroll past them
+                const atStart = currentScroll <= 1;
+                const atEnd = currentScroll >= maxScroll - 1;
+                const scrollingUp = e.deltaY < 0;
+                const scrollingDown = e.deltaY > 0;
 
-            const isTrackpad = Math.abs(e.deltaY) < 50 && Math.abs(e.deltaX) === 0;
-            const multiplier = isTrackpad ? 20.0 : 4.0; // Adjusted for feel
-            const scrollAmount = e.deltaY * multiplier;
+                if ((atStart && scrollingUp) || (atEnd && scrollingDown)) {
+                    // Manually scroll the window to prevent "stuck" feeling
+                    window.scrollBy({ top: e.deltaY, behavior: 'auto' });
+                    // Legacy behavior: Let native event happen
+                    return;
+                }
 
-            // Check boundaries
-            const maxScroll = container.scrollWidth - container.clientWidth;
-            const currentScroll = container.scrollLeft;
+                // Prevent vertical scroll and hijack for horizontal
+                e.preventDefault();
 
-            if ((currentScroll === 0 && scrollAmount < 0) || (Math.abs(currentScroll - maxScroll) < 5 && scrollAmount > 0)) {
-                // At boundary, do nothing (let natural vertical scroll happen if browser allows, or just stop)
-                return;
+                let targetScroll = currentScroll + scrollAmount;
+
+                // Clamp target to bounds
+                targetScroll = Math.max(0, Math.min(targetScroll, maxScroll));
+
+                // Use GSAP for smooth scrolling
+                gsap.to(container, {
+                    scrollLeft: targetScroll,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    overwrite: true
+                });
             }
-
-            e.preventDefault();
-            container.scrollLeft += scrollAmount;
         };
 
-        // The event listener should be attached to the container, not inside handleWheel
+        // Add non-passive listener to allow preventDefault
         container.addEventListener('wheel', handleWheel, { passive: false });
         return () => container.removeEventListener('wheel', handleWheel);
     }, []);
@@ -62,48 +81,47 @@ const ChaptersSlider = ({ chapters = [] }) => {
                     className="overflow-x-auto pb-12 hide-scrollbar flex gap-6 px-4 w-full"
                 >
                     {displayChapters.map((chapter) => (
-                        <Link
-                            to={`/chapter/${chapter.id}`}
-                            key={chapter.id}
-                            className="group relative w-[280px] md:w-[300px] flex-shrink-0 flex flex-col h-[380px] bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 ease-out border border-transparent hover:border-rose-100"
-                        >
-                            {/* Simulated Book Cover / Header Area */}
-                            {/* Book Cover / Image Area */}
-                            <div className="h-40 rounded-xl bg-[var(--bg-color)] mb-6 relative overflow-hidden shadow-sm group-hover:shadow-md transition-all">
-                                {chapter.image ? (
-                                    <img
-                                        src={chapter.image}
-                                        alt={chapter.title}
-                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                                        loading="lazy"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-[#FFECE4]">
-                                        <span className="text-[var(--primary-color)] font-bold text-4xl opacity-20">
-                                            {chapter.id}
-                                        </span>
+                        <div key={chapter.id} className="relative w-[280px] md:w-[300px] flex-shrink-0 h-[380px]">
+                            <Card className="h-full flex flex-col !p-6" title={null}>
+                                <Link to={`/chapter/${chapter.id}`} className="flex flex-col h-full group">
+                                    {/* Book Cover / Image Area */}
+                                    <div className="h-40 rounded-xl bg-[var(--bg-color)] mb-6 relative overflow-hidden shadow-sm transition-all">
+                                        {chapter.image ? (
+                                            <img
+                                                src={chapter.image}
+                                                alt={chapter.title}
+                                                className="w-full h-full object-cover transform transition-transform duration-700"
+                                                loading="lazy"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-[#FFECE4]">
+                                                <span className="text-[var(--primary-color)] font-bold text-4xl opacity-20">
+                                                    {chapter.id}
+                                                </span>
+                                            </div>
+                                        )}
+                                        {/* Soft Warm Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60 transition-opacity"></div>
                                     </div>
-                                )}
-                                {/* Soft Warm Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
-                            </div>
 
-                            <div className="flex-1 flex flex-col">
-                                <div className="text-[10px] uppercase tracking-widest font-bold text-[var(--primary-color)] mb-2">
-                                    Guide
-                                </div>
-                                <h3 className="text-xl font-bold text-[var(--text-main)] mb-3 leading-tight line-clamp-2 font-display">
-                                    {chapter.title}
-                                </h3>
-                                <p className="text-sm text-[var(--text-muted)] line-clamp-3 mb-4 leading-relaxed">
-                                    {chapter.description}
-                                </p>
+                                    <div className="flex-1 flex flex-col">
+                                        <div className="text-[10px] uppercase tracking-widest font-bold text-[var(--primary-color)] mb-2">
+                                            Guide
+                                        </div>
+                                        <h3 className="text-xl font-bold text-[var(--text-main)] mb-3 leading-tight line-clamp-2 font-display">
+                                            {chapter.title}
+                                        </h3>
+                                        <p className="text-sm text-[var(--text-muted)] line-clamp-3 mb-4 leading-relaxed">
+                                            {chapter.description}
+                                        </p>
 
-                                <div className="mt-auto flex items-center text-sm font-semibold text-[var(--text-main)] group-hover:text-[var(--primary-color)] transition-colors">
-                                    Read Guide
-                                </div>
-                            </div>
-                        </Link>
+                                        <div className="mt-auto flex items-center text-sm font-semibold text-[var(--text-main)] group-hover:text-[var(--primary-color)] transition-colors">
+                                            Read Guide
+                                        </div>
+                                    </div>
+                                </Link>
+                            </Card>
+                        </div>
                     ))}
                 </div>
 

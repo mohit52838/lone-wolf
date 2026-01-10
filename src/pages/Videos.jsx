@@ -37,7 +37,7 @@ const Videos = () => {
 
                 {/* Header */}
                 <div className="mb-16">
-                    <span className="text-xs font-bold tracking-widest text-rose-500 uppercase mb-4 block">Visual Library</span>
+                    <span className="text-xs font-bold tracking-widest text-[var(--primary-color)] uppercase mb-4 block">Visual Library</span>
                     <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Videos & Tutorials</h1>
                     <p className="text-xl text-gray-500 font-light max-w-2xl leading-relaxed">
                         Verified educational content from trusted health sources.
@@ -53,8 +53,8 @@ const Videos = () => {
                                 key={cat}
                                 onClick={() => setSelectedCategory(cat)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === cat
-                                        ? 'bg-rose-500 text-white shadow-md'
-                                        : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 hover:border-gray-200'
+                                    ? 'bg-rose-500 text-white shadow-md'
+                                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 hover:border-gray-200'
                                     }`}
                             >
                                 {cat}

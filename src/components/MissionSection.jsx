@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaStethoscope, FaHeartbeat, FaUsers } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import Card from './Card';
 
 const MissionSection = () => {
     const features = [
@@ -41,17 +42,20 @@ const MissionSection = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.2, duration: 0.5 }}
                             viewport={{ once: true }}
-                            className="flex flex-col items-center text-center group p-6 rounded-2xl hover:bg-[var(--bg-color)] transition-colors duration-300"
                         >
-                            <div className="w-16 h-16 rounded-full bg-[#FFF9F5] flex items-center justify-center text-[var(--primary-color)] mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm group-hover:shadow-md">
-                                {feature.icon}
-                            </div>
-                            <h3 className="text-xl font-bold mb-3 text-[var(--text-main)]">
-                                {feature.title}
-                            </h3>
-                            <p className="text-[var(--text-muted)] text-sm md:text-base leading-relaxed">
-                                {feature.desc}
-                            </p>
+                            <Card className="flex flex-col items-center text-center h-full !p-8 bg-white" title={null}>
+                                <div className="card-content flex flex-col items-center">
+                                    <div className="w-16 h-16 rounded-full bg-[#FFF9F5] flex items-center justify-center text-[var(--primary-color)] mb-6 shadow-sm transition-transform duration-300 group-hover:scale-110">
+                                        {feature.icon}
+                                    </div>
+                                    <h3 className="text-xl font-bold mb-3 text-[var(--text-main)] transition-colors group-hover:text-[var(--primary-color)]">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="text-[var(--text-muted)] text-sm md:text-base leading-relaxed">
+                                        {feature.desc}
+                                    </p>
+                                </div>
+                            </Card>
                         </motion.div>
                     ))}
                 </div>

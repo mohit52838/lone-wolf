@@ -17,7 +17,7 @@ const Chapters = () => {
 
                 {/* Header */}
                 <div className="mb-16 text-center md:text-left">
-                    <span className="text-xs font-bold tracking-widest text-rose-500 uppercase mb-4 block">Knowledge Base</span>
+                    <span className="text-xs font-bold tracking-widest text-[var(--primary-color)] uppercase mb-4 block">Knowledge Base</span>
                     <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Explore our guides</h1>
                     <p className="text-xl text-gray-500 font-light max-w-2xl leading-relaxed">
                         Medically verified articles designed to help you understand your body better. Use the search below to find specific topics.
@@ -29,7 +29,7 @@ const Chapters = () => {
                     <div className="relative max-w-xl">
                         <input
                             type="text"
-                            className="w-full text-lg py-4 pl-6 pr-12 rounded-full border border-gray-200 bg-white shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all font-light"
+                            className="w-full text-lg py-4 pl-6 pr-12 rounded-full border border-gray-200 bg-white shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] transition-all font-light"
                             placeholder="Search topics (e.g., 'Anxiety', 'Cycle')..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -45,17 +45,18 @@ const Chapters = () => {
                     {filteredChapters.length > 0 ? (
                         filteredChapters.map((chapter) => (
                             <Link key={chapter.id} to={`/chapter/${chapter.id}`} className="block group">
-                                <div className="bg-white rounded-[1.5rem] overflow-hidden hover:shadow-xl transition-all duration-300 border border-transparent hover:border-red-100 flex flex-col md:flex-row h-full md:h-64">
+                                <div className="bg-white rounded-[1.5rem] overflow-hidden hover:shadow-[0_8px_30px_rgba(230,0,126,0.25)] transition-all duration-300 border-2 border-transparent hover:border-[var(--primary-color)] flex flex-col md:flex-row h-full md:h-64">
                                     {/* Image Section */}
                                     <div className="w-full md:w-1/3 h-48 md:h-full relative overflow-hidden">
                                         {chapter.image ? (
                                             <img
                                                 src={chapter.image}
                                                 alt={chapter.title}
-                                                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                                                style={{ objectPosition: chapter.imagePosition || 'center' }}
+                                                className="w-full h-full object-cover transform group-hover:scale-102 transition-transform duration-700"
                                             />
                                         ) : (
-                                            <div className="w-full h-full bg-rose-50 flex items-center justify-center text-rose-300">
+                                            <div className="w-full h-full bg-[var(--secondary-color)] flex items-center justify-center text-[var(--secondary-pink)]">
                                                 <span className="text-4xl font-display font-bold">{chapter.id}</span>
                                             </div>
                                         )}
@@ -65,15 +66,15 @@ const Chapters = () => {
                                     {/* Content Section */}
                                     <div className="p-8 flex-1 flex flex-col justify-center">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <span className="text-xs font-bold tracking-widest text-rose-500 uppercase">Guide {chapter.id}</span>
+                                            <span className="text-xs font-bold tracking-widest text-[var(--primary-color)] uppercase">Guide {chapter.id}</span>
                                         </div>
-                                        <h2 className="text-2xl font-bold text-gray-900 font-display mb-3 group-hover:text-rose-600 transition-colors">
+                                        <h2 className="text-2xl font-bold text-gray-900 font-display mb-3 group-hover:text-[var(--primary-color)] transition-colors">
                                             {chapter.title}
                                         </h2>
                                         <p className="text-gray-500 font-light leading-relaxed line-clamp-2 md:line-clamp-3 mb-6">
                                             {chapter.description}
                                         </p>
-                                        <div className="flex items-center text-sm font-semibold text-rose-500 group-hover:translate-x-1 transition-transform mt-auto">
+                                        <div className="flex items-center text-sm font-semibold text-[var(--primary-color)] group-hover:translate-x-1 transition-transform mt-auto">
                                             Read Article <FaArrowRight className="ml-2" size={12} />
                                         </div>
                                     </div>
@@ -85,7 +86,7 @@ const Chapters = () => {
                             <p className="text-gray-500 text-lg mb-2">No guides found for "{searchTerm}".</p>
                             <button
                                 onClick={() => setSearchTerm('')}
-                                className="text-rose-500 font-medium hover:underline"
+                                className="text-[var(--primary-color)] font-medium hover:underline"
                             >
                                 Clear search
                             </button>
