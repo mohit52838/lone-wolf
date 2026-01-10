@@ -114,4 +114,4 @@ dist
 .pnp.*
 
 # Misc
-temp_legacy_audit/
+temp_*/
