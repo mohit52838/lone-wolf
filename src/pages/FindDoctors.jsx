@@ -97,10 +97,10 @@ const FindDoctors = () => {
         }
     }, [mapBounds, loading]);
 
-    const handleBoundsChange = (bounds) => {
+    const handleBoundsChange = useCallback((bounds) => {
         setMapBounds(bounds);
         setShowSearchButton(true);
-    };
+    }, []);
 
     const handleFacilityClick = useCallback((facility) => {
         setSelectedFacility(facility);
