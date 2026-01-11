@@ -85,6 +85,7 @@
   animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
+
 .user-location-marker::after {
   content: '';
   position: absolute;
@@ -94,4 +95,33 @@
   border-radius: 50%;
   box-shadow: 0 0 8px rgba(0,0,0,.3);
   animation: pulse-dot 1.25s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
+}
+
+/* Custom Pin Marker (Replaces Image Icons) */
+.custom-pin-marker {
+  background-color: #e6007e;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  width: 36px;
+  height: 36px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  border: 3px solid white;
+  transition: transform 0.2s ease;
+}
+
+.custom-pin-marker:hover {
+  transform: rotate(-45deg) scale(1.1);
+  background-color: #cc0070;
+}
+
+.custom-pin-marker .pin-icon {
+  transform: rotate(45deg);
+  color: white;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

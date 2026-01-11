@@ -1,19 +1,17 @@
 // src/utils/overpassApi.js
 import { distanceKm } from './distance';
 
-const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
+const OVERPASS_INSTANCES = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+];
 
 export const fetchNearbyHealthcare = async (lat, lng, radiusMeters = 5000, bounds = null) => {
-    // Construct the query
-    // We use a timeout of 25 seconds
-    // We search for nodes and ways with specific tags
-
     let areaFilter = '';
     if (bounds) {
-        // If bounds are provided, use bbox: (south,west,north,east)
         areaFilter = `(${bounds.south},${bounds.west},${bounds.north},${bounds.east})`;
     } else {
-        // Otherwise use around:radius,lat,lon
         areaFilter = `(around:${radiusMeters},${lat},${lng})`;
     }
 
@@ -32,32 +30,45 @@ export const fetchNearbyHealthcare = async (lat, lng, radiusMeters = 5000, bound
         out center;
     `;
 
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s client timeout
+    let lastError = null;
 
-        const response = await fetch(OVERPASS_API_URL, {
-            method: 'POST',
-            body: 'data=' + encodeURIComponent(query),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            signal: controller.signal
-        });
+    for (const apiUrl of OVERPASS_INSTANCES) {
+        try {
+            console.log(`Fetching from Overpass instance: ${apiUrl}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
-        clearTimeout(timeoutId);
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                body: 'data=' + encodeURIComponent(query),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                signal: controller.signal
+            });
 
-        if (!response.ok) {
-            throw new Error(`Overpass API error: ${response.status}`);
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                if (response.status === 429) {
+                    throw new Error(`Rate limit exceeded (${response.status})`);
+                }
+                throw new Error(`API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return parseOverpassResponse(data.elements, lat, lng);
+
+        } catch (error) {
+            console.warn(`Failed to fetch from ${apiUrl}:`, error.message);
+            lastError = error;
+            // Continue to next mirror
         }
-
-        const data = await response.json();
-        return parseOverpassResponse(data.elements, lat, lng);
-
-    } catch (error) {
-        console.error("Error fetching healthcare data:", error);
-        throw error;
     }
+
+    // If we get here, all mirrors failed
+    console.error("All Overpass instances failed.", lastError);
+    throw lastError || new Error("Failed to fetch healthcare data from all available sources.");
 };
 
 const parseOverpassResponse = (elements, userLat, userLng) => {
@@ -84,20 +95,40 @@ const parseOverpassResponse = (elements, userLat, userLng) => {
             type = 'Clinic';
         }
 
-        // Format address
-        const addressParts = [
-            tags['addr:housenumber'],
-            tags['addr:street'],
-            tags['addr:suburb'],
-            tags['addr:city'],
-            tags['addr:postcode']
-        ].filter(Boolean);
+        // Determine Name
+        let name = tags.name || tags['name:en'] || tags['official_name'] || tags.brand || tags.operator;
+        if (!name) {
+            // Capitalize first letter of type if used as fallback
+            name = `${type} (Unnamed)`;
+        }
 
-        const address = addressParts.length > 0 ? addressParts.join(', ') : 'Address not available';
+        // Format address
+        let address = tags['addr:full'] || tags['contact:full'];
+
+        if (!address) {
+            const addressParts = [
+                tags['addr:housename'] || tags['contact:housename'],
+                tags['addr:housenumber'] || tags['contact:housenumber'],
+                tags['addr:street'] || tags['contact:street'] || tags['addr:place'] || tags['addr:locality'],
+                tags['addr:suburb'] || tags['contact:suburb'] || tags['addr:district'],
+                tags['addr:city'] || tags['contact:city'] || tags['is_in:city'],
+                tags['addr:state'] || tags['is_in:state'],
+                tags['addr:postcode'] || tags['contact:postcode'] || tags['postal_code']
+            ].filter(Boolean);
+
+            if (addressParts.length > 0) {
+                // Deduplicate parts (e.g. if street and locality are same)
+                address = [...new Set(addressParts)].join(', ');
+            }
+        }
+
+        if (!address) {
+            address = 'Address not available';
+        }
 
         return {
             id: element.id,
-            name: tags.name || `${type} (Unnamed)`,
+            name: name,
             lat,
             lon,
             type,

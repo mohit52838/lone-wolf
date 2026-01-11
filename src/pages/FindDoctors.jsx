@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import MapComponent from '../components/MapComponent';
 import ResultCard from '../components/ResultCard';
 import { fetchNearbyHealthcare } from '../utils/overpassApi';
-import { FaMapMarkerAlt, FaSpinner } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaSpinner, FaSearch } from 'react-icons/fa';
 
 const FindDoctors = () => {
     const [location, setLocation] = useState(null);
@@ -25,26 +25,49 @@ const FindDoctors = () => {
     const DEFAULT_RADIUS = 5000;
 
     useEffect(() => {
+        let watchId;
+        let hasFetched = false;
+
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
+            watchId = navigator.geolocation.watchPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     const userLoc = [latitude, longitude];
+
+                    // Always update user marker position as it refines
                     setLocation(userLoc);
-                    setMapCenter(userLoc);
-                    fetchFacilities(latitude, longitude, DEFAULT_RADIUS);
+
+                    // Only center map and fetch facilities on the first fix
+                    if (!hasFetched) {
+                        setMapCenter(userLoc);
+                        fetchFacilities(latitude, longitude, DEFAULT_RADIUS);
+                        hasFetched = true;
+                    }
                 },
                 (err) => {
                     console.error("Geolocation error:", err);
-                    setError("Location access denied. Using default location.");
-                    setLoading(false);
-                    fetchFacilities(18.5204, 73.8567, DEFAULT_RADIUS);
+                    // Only show error if we haven't fetched anything yet
+                    if (!hasFetched) {
+                        setError("Location access denied. Using default location.");
+                        setLoading(false);
+                        fetchFacilities(18.5204, 73.8567, DEFAULT_RADIUS);
+                        hasFetched = true;
+                    }
+                },
+                {
+                    enableHighAccuracy: true,
+                    maximumAge: 0,
+                    timeout: 20000
                 }
             );
         } else {
             setError("Geolocation is not supported by this browser.");
             setLoading(false);
         }
+
+        return () => {
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+        };
     }, []);
 
     const fetchFacilities = async (lat, lng, rad, bounds = null) => {
@@ -61,7 +84,8 @@ const FindDoctors = () => {
         }
     };
 
-    const handleSearchArea = () => {
+    const handleSearchArea = useCallback(() => {
+        if (loading) return;
         if (mapBounds) {
             const center = mapBounds.getCenter();
             fetchFacilities(center.lat, center.lng, DEFAULT_RADIUS, {
@@ -71,21 +95,34 @@ const FindDoctors = () => {
                 east: mapBounds.getEast()
             });
         }
-    };
+    }, [mapBounds, loading]);
 
     const handleBoundsChange = (bounds) => {
         setMapBounds(bounds);
         setShowSearchButton(true);
     };
 
-    const handleFacilityClick = (facility) => {
+    const handleFacilityClick = useCallback((facility) => {
         setSelectedFacility(facility);
         setMapCenter([facility.lat, facility.lon]);
-    };
+    }, []);
 
     const handleFilterChange = (type) => {
         setFilters(prev => ({ ...prev, [type]: !prev[type] }));
     };
+
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Debounced Auto-Search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (searchQuery.length > 2) {
+                handleSearchArea();
+            }
+        }, 800);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery, handleSearchArea]);
 
     const filteredFacilities = useMemo(() => {
         return facilities.filter(f => {
@@ -93,16 +130,47 @@ const FindDoctors = () => {
             if (f.type === 'Hospital' && !filters.Hospital) return false;
             if (f.type === 'Clinic' && !filters.Clinic) return false;
             if (f.type === 'Doctor' && !filters.Doctor) return false;
+
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                return f.name.toLowerCase().includes(query) ||
+                    f.address.toLowerCase().includes(query);
+            }
             return true;
         });
-    }, [facilities, filters]);
+    }, [facilities, filters, searchQuery]);
 
     return (
         <div className="min-h-screen pt-32 pb-10 px-4 sm:px-6 lg:px-8 font-sans h-screen flex flex-col">
 
-            <div className="max-w-7xl mx-auto w-full mb-6 flex-shrink-0">
-                <span className="text-xs font-bold tracking-widest text-[var(--primary-color)] uppercase mb-2 block">Care Finder</span>
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Find a Doctor</h1>
+            {/* Header Area with Search Bar */}
+            <div className="max-w-7xl mx-auto w-full mb-6 flex-shrink-0 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                <div className="w-full md:w-[35%] lg:w-[30%]">
+                    <span className="text-xs font-bold tracking-widest text-[var(--primary-color)] uppercase mb-2 block">Care Finder</span>
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-none">Find a Doctor</h1>
+                </div>
+
+                {/* Search Bar - Aligned with Map Column */}
+                <div className="w-full md:w-[65%] lg:w-[70%] relative z-30">
+                    <div className="relative">
+                        <FaMapMarkerAlt className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                        <input
+                            type="text"
+                            placeholder="Search for clinic, hospital, address..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearchArea()}
+                            className="w-full pl-10 pr-12 py-3 rounded-2xl border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#e6007e] focus:border-transparent transition-all text-sm font-medium placeholder-gray-400 bg-white"
+                        />
+                        <button
+                            onClick={handleSearchArea}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#e6007e] text-white p-2 rounded-xl hover:bg-[#d40073] transition-colors shadow-md"
+                            disabled={loading}
+                        >
+                            {loading ? <FaSpinner className="animate-spin" size={14} /> : <FaSearch size={14} />}
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row gap-6 flex-grow overflow-hidden pb-6">
@@ -162,7 +230,7 @@ const FindDoctors = () => {
                     </div>
                 </div>
 
-                {/* Map Container */}
+                {/* Right Column: Map Only (Restored Height) */}
                 <div className="w-full md:w-[65%] lg:w-[70%] relative z-10 order-1 md:order-2 h-[400px] md:h-full bg-gray-100 rounded-3xl overflow-hidden shadow-inner border border-gray-200">
                     <MapComponent
                         center={mapCenter}
@@ -172,6 +240,7 @@ const FindDoctors = () => {
                         onBoundsChange={handleBoundsChange}
                         showSearchButton={showSearchButton}
                         onSearchArea={handleSearchArea}
+                        selectedFacility={selectedFacility}
                     />
                 </div>
             </div>

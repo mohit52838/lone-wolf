@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Tooltip } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import '../styles/map.css';
 import L from 'leaflet';
-import { FaSearchLocation, FaDirections, FaUserMd, FaHospital, FaClinicMedical, FaLocationArrow } from 'react-icons/fa';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { FaSearchLocation, FaDirections, FaUserMd, FaHospital, FaClinicMedical, FaLocationArrow, FaMapMarkerAlt, FaStreetView } from 'react-icons/fa';
 import MapLegend from './MapLegend';
 
 // Fix Leaflet default icon issue
@@ -15,24 +16,32 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Custom Icons
-const createIcon = (url) => new L.Icon({
-    iconUrl: url,
-    iconSize: [28, 28], // Reduced from 40x40
-    iconAnchor: [14, 28],
-    popupAnchor: [0, -30],
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    shadowSize: [28, 28],
-    shadowAnchor: [8, 28],
-    className: 'leaflet-marker-icon-custom'
-});
+// Create HTML Icon using React Icons
+const createCustomIcon = (type) => {
+    let IconComponent = FaMapMarkerAlt;
+
+    if (type === 'Gynecologist') IconComponent = FaUserMd;
+    else if (type === 'Hospital') IconComponent = FaHospital;
+    else if (type === 'Clinic') IconComponent = FaClinicMedical;
+    else if (type === 'Doctor') IconComponent = FaUserMd;
+
+    const iconHtml = renderToStaticMarkup(<IconComponent />);
+
+    return L.divIcon({
+        html: `<div class="custom-pin-marker"><div class="pin-icon">${iconHtml}</div></div>`,
+        className: 'custom-pin-container', // Wrapper class to avoid default styles interfering
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+        popupAnchor: [0, -40]
+    });
+};
 
 const mapIcons = {
-    Gynecologist: createIcon('/icons/gynecology.svg'),
-    Hospital: createIcon('/icons/hospital.svg'),
-    Clinic: createIcon('/icons/clinic.svg'),
-    Doctor: createIcon('/icons/doctor.svg'),
-    default: createIcon('/icons/clinic.svg')
+    Gynecologist: createCustomIcon('Gynecologist'),
+    Hospital: createCustomIcon('Hospital'),
+    Clinic: createCustomIcon('Clinic'),
+    Doctor: createCustomIcon('Doctor'),
+    default: createCustomIcon('default')
 };
 
 // Stable Cluster Icon
@@ -40,18 +49,38 @@ const createClusterCustomIcon = (cluster) => {
     return L.divIcon({
         html: `<div class="cluster-inner">${cluster.getChildCount()}</div>`,
         className: 'marker-cluster-custom',
-        iconSize: L.point(32, 32, true), // Reduced from 40x40
+        iconSize: L.point(32, 32, true),
         iconAnchor: [16, 16]
     });
 };
 
-// Map Events for "Search this area"
+// Custom User Location Icon
+const userIcon = L.divIcon({
+    html: `
+        <div class="relative flex items-center justify-center w-6 h-6">
+            <div class="absolute w-full h-full bg-blue-400/50 rounded-full animate-ping"></div>
+            <div class="relative z-10 w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-md"></div>
+        </div>
+    `,
+    className: 'custom-user-marker',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+});
+
+// Map Events for "Search this area" & Initial Bounds
 const MapEvents = ({ onMoveEnd }) => {
     const map = useMapEvents({
         moveend: () => {
             onMoveEnd(map.getBounds());
         },
     });
+
+    useEffect(() => {
+        if (map) {
+            onMoveEnd(map.getBounds());
+        }
+    }, [map, onMoveEnd]);
+
     return null;
 };
 
@@ -63,7 +92,7 @@ const MapUpdater = ({ center }) => {
             const current = map.getCenter();
             const dist = map.distance(current, center);
             if (dist > 10) {
-                map.flyTo(center, map.getZoom(), { duration: 1.5 });
+                map.flyTo(center, 16, { duration: 1.5 }); // Closer zoom on select
             }
         }
     }, [center, map]);
@@ -98,7 +127,16 @@ const RecenterButton = ({ userLocation }) => {
     );
 };
 
-const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsChange, showSearchButton, onSearchArea }) => {
+const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsChange, showSearchButton, onSearchArea, selectedFacility }) => {
+    const markerRefs = useRef({});
+
+    // Open popup when selectedFacility changes
+    useEffect(() => {
+        if (selectedFacility && markerRefs.current[selectedFacility.id]) {
+            const marker = markerRefs.current[selectedFacility.id];
+            marker.openPopup();
+        }
+    }, [selectedFacility]);
 
     const markerElements = useMemo(() => {
         return markers.map((marker) => (
@@ -109,6 +147,7 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                 eventHandlers={{
                     click: () => onMarkerClick(marker),
                 }}
+                ref={(el) => (markerRefs.current[marker.id] = el)}
             >
                 <Popup>
                     <div className="font-poppins min-w-[220px] p-1">
@@ -128,9 +167,9 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                             href={`https://www.google.com/maps/dir/?api=1&destination=${marker.lat},${marker.lon}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex w-full bg-[#e6007e] text-white py-2 rounded-lg text-xs font-semibold hover:bg-[#cc0070] transition-colors items-center justify-center gap-1"
+                            className="flex w-full bg-[#e6007e] !text-white py-2 rounded-lg text-xs font-semibold hover:bg-[#cc0070] transition-colors items-center justify-center gap-1"
                         >
-                            <FaDirections /> Get Directions
+                            <FaDirections className="text-white" /> Get Directions
                         </a>
                     </div>
                 </Popup>
@@ -157,11 +196,11 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                 {userLocation && (
                     <Marker
                         position={userLocation}
-                        icon={L.divIcon({ className: 'user-location-marker', iconSize: [32, 32] })} // Increased from 20x20
+                        icon={userIcon}
                     >
                         <Popup>
-                            <div className="font-poppins">
-                                <h3 className="font-bold text-[#e6007e]">You are here</h3>
+                            <div className="font-poppins p-1 text-center">
+                                <h3 className="font-bold text-blue-600 text-sm whitespace-nowrap">You are here</h3>
                             </div>
                         </Popup>
                     </Marker>
@@ -170,10 +209,11 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                 <MarkerClusterGroup
                     chunkedLoading
                     iconCreateFunction={createClusterCustomIcon}
-                    spiderfyOnMaxZoom={false}
+                    spiderfyOnMaxZoom={true}
+                    spiderfyDistanceMultiplier={2}
                     showCoverageOnHover={false}
                     maxClusterRadius={60}
-                    animate={false}
+                    animate={true}
                 >
                     {markerElements}
                 </MarkerClusterGroup>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaMapMarkerAlt, FaDirections, FaHospital, FaUserMd, FaClinicMedical } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaDirections, FaHospital, FaUserMd, FaClinicMedical, FaStar } from 'react-icons/fa';
 
 const ResultCard = ({ facility, isSelected, onClick }) => {
     const getIcon = (type) => {

@@ -1,49 +1,66 @@
 import React, { useState } from 'react';
-import { FaInfoCircle, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaUserMd, FaHospital, FaClinicMedical } from 'react-icons/fa';
 
 const MapLegend = () => {
     const [isOpen, setIsOpen] = useState(true);
 
     const items = [
-        { label: 'Gynecologist', icon: '/icons/gynecology.svg' },
-        { label: 'Hospital', icon: '/icons/hospital.svg' },
-        { label: 'Clinic', icon: '/icons/clinic.svg' },
-        { label: 'Doctor', icon: '/icons/doctor.svg' },
+        { label: 'Gynecologist', icon: <FaUserMd />, color: 'bg-pink-100 text-[#e6007e]' },
+        { label: 'Hospital', icon: <FaHospital />, color: 'bg-pink-100 text-[#e6007e]' },
+        { label: 'Clinic', icon: <FaClinicMedical />, color: 'bg-pink-100 text-[#e6007e]' },
+        { label: 'Doctor', icon: <FaUserMd />, color: 'bg-pink-100 text-[#e6007e]' },
     ];
 
     return (
-        <div className="absolute bottom-6 left-6 z-[1000] font-poppins">
-            {/* Mobile Toggle Button */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden bg-white/90 backdrop-blur-md p-3 rounded-full shadow-lg text-[#e6007e] border border-pink-100 mb-2 hover:bg-pink-50 transition-colors"
-                aria-label="Toggle Legend"
-            >
-                {isOpen ? <FaChevronDown /> : <FaInfoCircle />}
-            </button>
+        <div className="absolute bottom-5 left-4 z-[1000] font-poppins flex flex-col items-start gap-2">
 
-            {/* Legend Card */}
-            <div className={`
-        bg-white/90 backdrop-blur-md border border-pink-100 rounded-2xl shadow-lg p-4 w-48
-        transition-all duration-300 origin-bottom-left
-        ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none absolute bottom-0'}
-      `}>
-                <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 border-b border-pink-100 pb-2">
-                    Legend
-                </h4>
-                <div className="space-y-3">
-                    {items.map((item) => (
-                        <div key={item.label} className="flex items-center gap-3 group">
-                            <img
-                                src={item.icon}
-                                alt={item.label}
-                                className="w-6 h-6 transition-transform duration-200 group-hover:scale-110"
-                            />
-                            <span className="text-xs font-medium text-gray-700">{item.label}</span>
-                        </div>
-                    ))}
+            {/* Legend Card - Slide Transition */}
+            <div
+                className={`
+                    bg-white/95 backdrop-blur-md border border-pink-100 rounded-2xl shadow-xl overflow-hidden
+                    transition-all duration-500 ease-in-out origin-bottom-left
+                    ${isOpen ? 'max-h-[300px] opacity-100 translate-y-0 w-36' : 'max-h-0 opacity-0 translate-y-4 w-36 border-none'}
+                `}
+            >
+                <div className="p-3">
+                    <div className="flex justify-between items-center mb-2 border-b border-pink-100 pb-2">
+                        <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            Legend
+                        </h4>
+                        <button
+                            onClick={() => setIsOpen(false)}
+                            className="text-gray-400 hover:text-[#e6007e] transition-colors p-0.5"
+                            title="Minimize"
+                        >
+                            <FaChevronDown size={10} />
+                        </button>
+                    </div>
+
+                    <div className="space-y-2">
+                        {items.map((item, index) => (
+                            <div key={index} className="flex items-center gap-2 group">
+                                <span className={`p-1 rounded-full ${item.color} text-[10px] shadow-sm`}>
+                                    {item.icon}
+                                </span>
+                                <span className="text-[11px] font-semibold text-gray-700">{item.label}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
+
+            {/* Floating Toggle Button (Visible only when closed) */}
+            <button
+                onClick={() => setIsOpen(true)}
+                className={`
+                    bg-white text-[#e6007e] font-bold text-xs uppercase tracking-wider
+                    px-4 py-2 rounded-full shadow-lg border border-pink-100
+                    flex items-center gap-2 hover:bg-pink-50 transition-all duration-300
+                    ${isOpen ? 'translate-y-10 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}
+                `}
+            >
+                <FaChevronUp /> Legend
+            </button>
         </div>
     );
 };
