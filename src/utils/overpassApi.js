@@ -2,12 +2,51 @@
 import { distanceKm } from './distance';
 
 const OVERPASS_INSTANCES = [
-    'https://overpass-api.de/api/interpreter',
-    'https://overpass.kumi.systems/api/interpreter',
-    'https://maps.mail.ru/osm/tools/overpass/api/interpreter'
+    'https://overpass.kumi.systems/api/interpreter', // Usually fastest
+    'https://maps.mail.ru/osm/tools/overpass/api/interpreter', // Good backup
+    'https://overpass-api.de/api/interpreter' // Often overloaded
 ];
 
-export const fetchNearbyHealthcare = async (lat, lng, radiusMeters = 5000, bounds = null) => {
+const fetchWithRace = async (urls, options) => {
+    // Helper to race fetch requests
+    // We Map each URL to a fetch promise
+
+    // We need to handle failures carefully. Promise.any waits for the first FULFILLED promise.
+    // If all reject, it throws an AggregateError.
+
+    const requests = urls.map(async (url) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s hard timeout for any single request
+
+        try {
+            console.log(`Starting race request to: ${url}`);
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                if (response.status === 429) {
+                    throw new Error(`Rate limit ${url}`);
+                }
+                throw new Error(`HTTP ${response.status} from ${url}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            clearTimeout(timeoutId);
+            console.warn(`Race failed for ${url}: ${err.message}`);
+            throw err; // Propagate error so Promise.any ignores this implementation
+        }
+    });
+
+    return Promise.any(requests);
+};
+
+export const fetchNearbyHealthcare = async (lat, lng, radiusMeters = 5000, bounds = null, searchQuery = '') => {
     let areaFilter = '';
     if (bounds) {
         areaFilter = `(${bounds.south},${bounds.west},${bounds.north},${bounds.east})`;
@@ -15,8 +54,18 @@ export const fetchNearbyHealthcare = async (lat, lng, radiusMeters = 5000, bound
         areaFilter = `(around:${radiusMeters},${lat},${lng})`;
     }
 
+    let extraNameQueries = '';
+    if (searchQuery && searchQuery.trim().length > 0) {
+        // Sanitize search query to prevent injection (basic)
+        const safeQuery = searchQuery.replace(/[\\";]/g, '');
+        extraNameQueries = `
+          node["name"~"${safeQuery}",i]${areaFilter};
+          way["name"~"${safeQuery}",i]${areaFilter};
+        `;
+    }
+
     const query = `
-        [out:json][timeout:25];
+        [out:json][timeout:15];
         (
           node["healthcare:speciality"="gynaecology"]${areaFilter};
           node["amenity"="clinic"]${areaFilter};
@@ -26,49 +75,28 @@ export const fetchNearbyHealthcare = async (lat, lng, radiusMeters = 5000, bound
           way["amenity"="clinic"]${areaFilter};
           way["healthcare"="doctor"]${areaFilter};
           way["amenity"="hospital"]${areaFilter};
+          ${extraNameQueries}
         );
         out center;
     `;
 
-    let lastError = null;
-
-    for (const apiUrl of OVERPASS_INSTANCES) {
-        try {
-            console.log(`Fetching from Overpass instance: ${apiUrl}`);
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                body: 'data=' + encodeURIComponent(query),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-
-            if (!response.ok) {
-                if (response.status === 429) {
-                    throw new Error(`Rate limit exceeded (${response.status})`);
-                }
-                throw new Error(`API error: ${response.status}`);
+    try {
+        console.log("Initiating parallel Overpass fetch...");
+        const data = await fetchWithRace(OVERPASS_INSTANCES, {
+            method: 'POST',
+            body: 'data=' + encodeURIComponent(query),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
+        });
 
-            const data = await response.json();
-            return parseOverpassResponse(data.elements, lat, lng);
+        console.log("Race won! Parsing results...");
+        return parseOverpassResponse(data.elements, lat, lng);
 
-        } catch (error) {
-            console.warn(`Failed to fetch from ${apiUrl}:`, error.message);
-            lastError = error;
-            // Continue to next mirror
-        }
+    } catch (error) {
+        console.error("All parallel Overpass requests failed:", error);
+        throw new Error("Unable to fetch data from any map server. Please try again later.");
     }
-
-    // If we get here, all mirrors failed
-    console.error("All Overpass instances failed.", lastError);
-    throw lastError || new Error("Failed to fetch healthcare data from all available sources.");
 };
 
 const parseOverpassResponse = (elements, userLat, userLng) => {

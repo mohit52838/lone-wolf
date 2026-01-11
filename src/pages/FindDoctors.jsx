@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import MapComponent from '../components/MapComponent';
 import ResultCard from '../components/ResultCard';
 import { fetchNearbyHealthcare } from '../utils/overpassApi';
@@ -13,6 +13,13 @@ const FindDoctors = () => {
     const [mapCenter, setMapCenter] = useState([18.5204, 73.8567]); // Default to Pune
     const [mapBounds, setMapBounds] = useState(null);
     const [showSearchButton, setShowSearchButton] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const searchQueryRef = useRef(searchQuery);
+
+    // Keep ref updated
+    useEffect(() => {
+        searchQueryRef.current = searchQuery;
+    }, [searchQuery]);
 
     // Filters
     const [filters, setFilters] = useState({
@@ -24,57 +31,132 @@ const FindDoctors = () => {
 
     const DEFAULT_RADIUS = 5000;
 
+    // Robust Location Strategy: High Acc -> Low Acc -> Default
     useEffect(() => {
-        let watchId;
-        let hasFetched = false;
+        let isMounted = true;
 
+        const handleSuccess = (position, source) => {
+            if (!isMounted) return;
+            const { latitude, longitude } = position.coords;
+            const userLoc = [latitude, longitude];
+            console.log(`Location found via ${source}:`, userLoc);
+
+            setLocation(userLoc);
+            setMapCenter(userLoc); // Center map on user
+            setLoading(false); // Stop loading spinner
+
+            // Check if user has already typed a search while we were finding location
+            const currentQuery = searchQueryRef.current;
+            if (currentQuery && currentQuery.trim().length > 0) {
+                console.log("Preserving user search with new location:", currentQuery);
+                fetchFacilities(latitude, longitude, 20000, null, currentQuery);
+            } else {
+                fetchFacilities(latitude, longitude, DEFAULT_RADIUS);
+            }
+        };
+
+        const handleDefault = (reason) => {
+            if (!isMounted) return;
+            console.warn("Using default location:", reason);
+            setError(`Could not detect precise location (${reason}). Showing Pune.`);
+            setLoading(false);
+
+            // Default: Pune
+            const defaultLoc = [18.5204, 73.8567];
+            setMapCenter(defaultLoc);
+            fetchFacilities(defaultLoc[0], defaultLoc[1], DEFAULT_RADIUS);
+        };
+
+        // Step 2: Low Accuracy (IP/Cell) - usually fast & "good enough" for city level
+        const tryLowAccuracy = () => {
+            console.log("Trying low accuracy location...");
+            navigator.geolocation.getCurrentPosition(
+                (pos) => handleSuccess(pos, 'Low Accuracy'),
+                (err) => handleDefault("Location unavailable"),
+                {
+                    enableHighAccuracy: false,
+                    timeout: 8000,
+                    maximumAge: 300000 // 5 minutes cached is fine
+                }
+            );
+        };
+
+        // Step 1: High Accuracy (GPS) - try this first
         if (navigator.geolocation) {
-            watchId = navigator.geolocation.watchPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    const userLoc = [latitude, longitude];
-
-                    // Always update user marker position as it refines
-                    setLocation(userLoc);
-
-                    // Only center map and fetch facilities on the first fix
-                    if (!hasFetched) {
-                        setMapCenter(userLoc);
-                        fetchFacilities(latitude, longitude, DEFAULT_RADIUS);
-                        hasFetched = true;
-                    }
-                },
+            navigator.geolocation.getCurrentPosition(
+                (pos) => handleSuccess(pos, 'High Accuracy'),
                 (err) => {
-                    console.error("Geolocation error:", err);
-                    // Only show error if we haven't fetched anything yet
-                    if (!hasFetched) {
-                        setError("Location access denied. Using default location.");
-                        setLoading(false);
-                        fetchFacilities(18.5204, 73.8567, DEFAULT_RADIUS);
-                        hasFetched = true;
-                    }
+                    console.warn("High accuracy failed, falling back to low accuracy...", err.message);
+                    tryLowAccuracy();
                 },
                 {
                     enableHighAccuracy: true,
-                    maximumAge: 0,
-                    timeout: 20000
+                    timeout: 6000, // Give GPS 6s to warm up
+                    maximumAge: 0
                 }
             );
         } else {
-            setError("Geolocation is not supported by this browser.");
-            setLoading(false);
+            handleDefault("Geolocation not supported");
         }
 
-        return () => {
-            if (watchId) navigator.geolocation.clearWatch(watchId);
-        };
+        return () => { isMounted = false; };
     }, []);
 
-    const fetchFacilities = async (lat, lng, rad, bounds = null) => {
+    // Manual "Locate Me" trigger with Fallback Strategy
+    const handleLocateMe = useCallback(() => {
+        setLoading(true);
+        setError(null);
+
+        const successHandler = (position) => {
+            const { latitude, longitude } = position.coords;
+            const userLoc = [latitude, longitude];
+            setLocation(userLoc);
+            setMapCenter(userLoc);
+            setError(null);
+            setLoading(false); // Ensure loading stops
+            setLoading(false); // Ensure loading stops
+
+            // Check if user has already typed a search
+            const currentQuery = searchQueryRef.current;
+            if (currentQuery && currentQuery.trim().length > 0) {
+                fetchFacilities(latitude, longitude, 20000, null, currentQuery);
+            } else {
+                fetchFacilities(latitude, longitude, DEFAULT_RADIUS);
+            }
+        };
+
+        const tryLowAccuracy = () => {
+            navigator.geolocation.getCurrentPosition(
+                successHandler,
+                (finalErr) => {
+                    console.error("Final location error:", finalErr);
+                    let errorMessage = "Could not retrieve your specific location.";
+                    if (finalErr.code === 1) errorMessage = "Location permission denied.";
+                    else if (finalErr.code === 3) errorMessage = "Location request timed out.";
+
+                    setError(`${errorMessage} Defaulting to Pune.`);
+                    setLoading(false);
+                },
+                { enableHighAccuracy: false, timeout: 8000, maximumAge: 0 }
+            );
+        };
+
+        // Attempt 1: High Accuracy
+        navigator.geolocation.getCurrentPosition(
+            successHandler,
+            (err) => {
+                console.warn("Manual high accuracy failed, trying low accuracy...", err);
+                tryLowAccuracy();
+            },
+            { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+        );
+    }, []);
+
+    const fetchFacilities = async (lat, lng, rad, bounds = null, term = '') => {
         setLoading(true);
         setShowSearchButton(false);
         try {
-            const data = await fetchNearbyHealthcare(lat, lng, rad, bounds);
+            const data = await fetchNearbyHealthcare(lat, lng, rad, bounds, term);
             setFacilities(data);
             setError(null);
         } catch (err) {
@@ -84,18 +166,38 @@ const FindDoctors = () => {
         }
     };
 
+    // Keep a ref for loading to avoid dependency cycles in callbacks
+    const loadingRef = useRef(loading);
+    useEffect(() => {
+        loadingRef.current = loading;
+    }, [loading]);
+
     const handleSearchArea = useCallback(() => {
-        if (loading) return;
-        if (mapBounds) {
-            const center = mapBounds.getCenter();
-            fetchFacilities(center.lat, center.lng, DEFAULT_RADIUS, {
-                south: mapBounds.getSouth(),
-                west: mapBounds.getWest(),
-                north: mapBounds.getNorth(),
-                east: mapBounds.getEast()
-            });
+        if (loadingRef.current) return;
+
+        // Smart Search Logic:
+        // 1. If user typed a query, search wider (20km) around the current view center.
+        //    This fixes the "Can't find Meera Hospital from Shivajinagar" issue.
+        // 2. If no query, just search the visible bounds.
+
+        if (searchQuery && searchQuery.trim().length > 0) {
+            console.log("Expanding search radius for query:", searchQuery);
+            const center = mapCenter; // Search around where we are looking
+            fetchFacilities(center[0], center[1], 20000, null, searchQuery); // 20km radius
+        } else {
+            // Standard "Search user's view"
+            let currentBounds = mapBounds;
+            if (currentBounds) {
+                const center = currentBounds.getCenter();
+                fetchFacilities(center.lat, center.lng, DEFAULT_RADIUS, {
+                    south: currentBounds.getSouth(),
+                    west: currentBounds.getWest(),
+                    north: currentBounds.getNorth(),
+                    east: currentBounds.getEast()
+                }, '');
+            }
         }
-    }, [mapBounds, loading]);
+    }, [mapBounds, searchQuery, mapCenter]);
 
     const handleBoundsChange = useCallback((bounds) => {
         setMapBounds(bounds);
@@ -110,8 +212,6 @@ const FindDoctors = () => {
     const handleFilterChange = (type) => {
         setFilters(prev => ({ ...prev, [type]: !prev[type] }));
     };
-
-    const [searchQuery, setSearchQuery] = useState('');
 
     // Debounced Auto-Search
     useEffect(() => {
@@ -232,6 +332,11 @@ const FindDoctors = () => {
 
                 {/* Right Column: Map Only (Restored Height) */}
                 <div className="w-full md:w-[65%] lg:w-[70%] relative z-10 order-1 md:order-2 h-[400px] md:h-full bg-gray-100 rounded-3xl overflow-hidden shadow-inner border border-gray-200">
+                    {error && error.includes("default") && (
+                        <div className="absolute top-0 left-0 right-0 bg-yellow-100 text-yellow-800 text-xs px-4 py-2 text-center z-[500] border-b border-yellow-200">
+                            <strong>Note:</strong> We couldn't find your precise location. Showing default area (Pune). Click the location arrow to try again.
+                        </div>
+                    )}
                     <MapComponent
                         center={mapCenter}
                         markers={filteredFacilities}
@@ -241,6 +346,7 @@ const FindDoctors = () => {
                         showSearchButton={showSearchButton}
                         onSearchArea={handleSearchArea}
                         selectedFacility={selectedFacility}
+                        onLocate={handleLocateMe}
                     />
                 </div>
             </div>

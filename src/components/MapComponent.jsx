@@ -90,44 +90,52 @@ const MapUpdater = ({ center }) => {
     useEffect(() => {
         if (center) {
             const current = map.getCenter();
+            // dist is in meters roughly? Leaflet distance is meters.
+            // But here we just want to fly there.
+
+            // Only fly if we are moving significantly or if we just want to ensure visibility
+            // The previous logic had a distance check, let's keep it but just fix the zoom level.
+
+            // NOTE: map.distance returns meters
             const dist = map.distance(current, center);
             if (dist > 10) {
-                map.flyTo(center, 16, { duration: 1.5 }); // Closer zoom on select
+                // Use current zoom if it's deeper than 16, otherwise zoom to 16
+                const targetZoom = Math.max(map.getZoom(), 16);
+                map.flyTo(center, targetZoom, { duration: 1.5 });
             }
         }
     }, [center, map]);
     return null;
 };
 
-// Recenter Button Component
-const RecenterButton = ({ userLocation }) => {
+// Recenter/Locate Button Component
+const RecenterButton = ({ userLocation, onLocate }) => {
     const map = useMap();
 
-    const handleRecenter = () => {
+    const handleClick = () => {
+        if (onLocate) onLocate();
         if (userLocation) {
             map.flyTo(userLocation, 15, { duration: 1.5 });
         }
     };
 
-    if (!userLocation) return null;
-
     return (
         <div className="leaflet-bottom leaflet-right">
             <div className="leaflet-control">
                 <button
-                    onClick={handleRecenter}
-                    className="bg-white text-gray-700 hover:text-[#e6007e] w-[34px] h-[34px] flex items-center justify-center shadow-md rounded-md transition-colors"
-                    title="Recenter Map"
+                    onClick={handleClick}
+                    className="bg-white text-gray-700 hover:text-[#e6007e] w-[40px] h-[40px] flex items-center justify-center shadow-md rounded-lg transition-colors border-2 border-white hover:border-[#e6007e]"
+                    title="Find My Location"
                     style={{ marginBottom: '80px', marginRight: '10px', pointerEvents: 'auto' }}
                 >
-                    <FaLocationArrow size={14} />
+                    <FaLocationArrow size={16} />
                 </button>
             </div>
         </div>
     );
 };
 
-const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsChange, showSearchButton, onSearchArea, selectedFacility }) => {
+const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsChange, showSearchButton, onSearchArea, selectedFacility, onLocate }) => {
     const markerRefs = useRef({});
 
     // Open popup when selectedFacility changes
@@ -197,6 +205,7 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                     <Marker
                         position={userLocation}
                         icon={userIcon}
+                        zIndexOffset={1000}
                     >
                         <Popup>
                             <div className="font-poppins p-1 text-center">
@@ -219,7 +228,7 @@ const MapComponent = ({ center, markers, onMarkerClick, userLocation, onBoundsCh
                 </MarkerClusterGroup>
 
                 <MapLegend />
-                <RecenterButton userLocation={userLocation} />
+                <RecenterButton userLocation={userLocation} onLocate={onLocate} />
             </MapContainer>
 
             {showSearchButton && (
