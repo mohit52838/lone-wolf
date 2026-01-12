@@ -15,6 +15,7 @@ const FindDoctors = () => {
     const [showSearchButton, setShowSearchButton] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const searchQueryRef = useRef(searchQuery);
+    const lastManualSearchTimeRef = useRef(0);
 
     // Keep ref updated
     useEffect(() => {
@@ -182,7 +183,12 @@ const FindDoctors = () => {
 
         if (searchQuery && searchQuery.trim().length > 0) {
             console.log("Expanding search radius for query:", searchQuery);
-            const center = mapCenter; // Search around where we are looking
+            // FIX: Use the explicit map bounds center if available, otherwise fallback to state center
+            let center = mapCenter;
+            if (mapBounds) {
+                const c = mapBounds.getCenter();
+                center = [c.lat, c.lng];
+            }
             fetchFacilities(center[0], center[1], 20000, null, searchQuery); // 20km radius
         } else {
             // Standard "Search user's view"
@@ -198,6 +204,11 @@ const FindDoctors = () => {
             }
         }
     }, [mapBounds, searchQuery, mapCenter]);
+
+    const triggerManualSearch = () => {
+        lastManualSearchTimeRef.current = Date.now();
+        handleSearchArea();
+    };
 
     const handleBoundsChange = useCallback((bounds) => {
         setMapBounds(bounds);
@@ -217,7 +228,10 @@ const FindDoctors = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
             if (searchQuery.length > 2) {
-                handleSearchArea();
+                // Prevent auto-search if a manual search happened recently (<1s ago)
+                if (Date.now() - lastManualSearchTimeRef.current > 1000) {
+                    handleSearchArea();
+                }
             }
         }, 800);
 
@@ -259,11 +273,11 @@ const FindDoctors = () => {
                             placeholder="Search for clinic, hospital, address..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearchArea()}
+                            onKeyDown={(e) => e.key === 'Enter' && triggerManualSearch()}
                             className="w-full pl-10 pr-12 py-3 rounded-2xl border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#e6007e] focus:border-transparent transition-all text-sm font-medium placeholder-gray-400 bg-white"
                         />
                         <button
-                            onClick={handleSearchArea}
+                            onClick={triggerManualSearch}
                             className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#e6007e] text-white p-2 rounded-xl hover:bg-[#d40073] transition-colors shadow-md"
                             disabled={loading}
                         >
@@ -296,17 +310,20 @@ const FindDoctors = () => {
                     </div>
 
                     {/* Results List */}
-                    <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50">
-                        {loading ? (
-                            <div className="flex flex-col items-center justify-center h-40 gap-3">
-                                <FaSpinner className="animate-spin text-rose-400" size={24} />
-                                <p className="text-sm text-gray-400">Finding nearby care...</p>
+                    <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50 relative min-h-[200px]">
+                        {/* Loading Overlay - Shown when refreshing results */}
+                        {loading && (
+                            <div className="absolute inset-0 bg-white/60 z-50 flex flex-col items-center justify-center backdrop-blur-[1px] transition-all duration-300">
+                                <FaSpinner className="animate-spin text-[#e6007e]" size={28} />
+                                <p className="text-xs font-bold text-[#e6007e] mt-3 tracking-widest uppercase">Finding nearby care...</p>
                             </div>
-                        ) : error ? (
+                        )}
+
+                        {error ? (
                             <div className="text-center p-6 text-rose-600 border border-rose-100 bg-rose-50 rounded-xl text-sm leading-relaxed">
                                 {error}
                             </div>
-                        ) : filteredFacilities.length === 0 ? (
+                        ) : filteredFacilities.length === 0 && !loading ? (
                             <div className="text-center p-8 text-gray-400">
                                 <FaMapMarkerAlt className="mx-auto mb-3 text-gray-300" size={24} />
                                 <p className="mb-2">No facilities found here.</p>

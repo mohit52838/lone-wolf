@@ -16,7 +16,7 @@ const fetchWithRace = async (urls, options) => {
 
     const requests = urls.map(async (url) => {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s hard timeout for any single request
+        const timeoutId = setTimeout(() => controller.abort(), 65000); // 65s timeout
 
         try {
             console.log(`Starting race request to: ${url}`);
@@ -54,34 +54,35 @@ export const fetchNearbyHealthcare = async (lat, lng, radiusMeters = 5000, bound
         areaFilter = `(around:${radiusMeters},${lat},${lng})`;
     }
 
-    let extraNameQueries = '';
-    if (searchQuery && searchQuery.trim().length > 0) {
-        // Sanitize search query to prevent injection (basic)
-        const safeQuery = searchQuery.replace(/[\\";]/g, '');
-        extraNameQueries = `
-          node["name"~"${safeQuery}",i]${areaFilter};
-          way["name"~"${safeQuery}",i]${areaFilter};
-        `;
-    }
+    // Base filters for healthcare facilities
+    // We fetch ALL healthcare items in the area and let the client filter them.
+    // This avoids expensive regex queries on the Overpass server which cause timeouts.
+    const baseFilters = [
+        '["healthcare:speciality"="gynaecology"]',
+        '["amenity"="clinic"]',
+        '["healthcare"="doctor"]',
+        '["amenity"="hospital"]',
+        '["amenity"="doctors"]'
+    ];
+
+    let queryLines = [];
+
+    // Always fetch all facilities in the area
+    baseFilters.forEach(filter => {
+        queryLines.push(`node${filter}${areaFilter};`);
+        queryLines.push(`way${filter}${areaFilter};`);
+    });
 
     const query = `
-        [out:json][timeout:15];
+        [out:json][timeout:60];
         (
-          node["healthcare:speciality"="gynaecology"]${areaFilter};
-          node["amenity"="clinic"]${areaFilter};
-          node["healthcare"="doctor"]${areaFilter};
-          node["amenity"="hospital"]${areaFilter};
-          way["healthcare:speciality"="gynaecology"]${areaFilter};
-          way["amenity"="clinic"]${areaFilter};
-          way["healthcare"="doctor"]${areaFilter};
-          way["amenity"="hospital"]${areaFilter};
-          ${extraNameQueries}
+          ${queryLines.join('\n          ')}
         );
         out center;
     `;
 
     try {
-        console.log("Initiating parallel Overpass fetch...");
+        console.log(`Initiating Overpass Search (Fetching all in radius)...`);
         const data = await fetchWithRace(OVERPASS_INSTANCES, {
             method: 'POST',
             body: 'data=' + encodeURIComponent(query),
@@ -90,12 +91,12 @@ export const fetchNearbyHealthcare = async (lat, lng, radiusMeters = 5000, bound
             }
         });
 
-        console.log("Race won! Parsing results...");
+        console.log("Overpass request successful. Parsing results...");
         return parseOverpassResponse(data.elements, lat, lng);
 
     } catch (error) {
-        console.error("All parallel Overpass requests failed:", error);
-        throw new Error("Unable to fetch data from any map server. Please try again later.");
+        console.error("Overpass request failed:", error);
+        throw new Error("Unable to fetch data. The map server might be busy.");
     }
 };
 
