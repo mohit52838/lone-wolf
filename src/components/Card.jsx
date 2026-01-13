@@ -152,7 +152,8 @@ const Card = ({ title, children, className = '', disableReveal = false }) => {
       <style>{`
         .holo-card {
           position: relative;
-          background: rgba(255, 255, 255, 0.7);
+          /* Surface Light Layer (Static Gradient) */
+          background: linear-gradient(160deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.2) 100%), rgba(255, 255, 255, 0.7);
           backdrop-filter: blur(20px);
           padding: 40px;
           border-radius: 24px;
@@ -164,11 +165,32 @@ const Card = ({ title, children, className = '', disableReveal = false }) => {
           cursor: pointer;
         }
 
+        /* Expanded Glow Halo (Pseudo-element) */
+        .holo-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 0%), rgba(255, 192, 203, 0.25), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 1; /* Below content, above background */
+            pointer-events: none;
+        }
+
+        .holo-card:hover::before {
+            opacity: 1;
+        }
+
         .holo-card:hover {
           transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
-          box-shadow: 0 25px 50px -12px rgba(255, 122, 162, 0.3);
+          /* Shadow Layering: Inner Glow + Primary Shadow + Secondary Depth Shadow */
+          box-shadow: 
+            inset 0 0 25px rgba(255, 182, 193, 0.3), /* Inner Edge Glow */
+            0 25px 50px -12px rgba(255, 122, 162, 0.4), /* Primary Lift */
+            0 10px 20px -5px rgba(0, 0, 0, 0.05); /* Soft ambient depth */
           border-color: var(--primary-pink);
-          background: rgba(255, 255, 255, 0.9);
+          /* Slightly brighter surface on hover */
+          background: linear-gradient(160deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%), rgba(255, 255, 255, 0.9);
         }
 
         .card-content {
