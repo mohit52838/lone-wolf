@@ -81,7 +81,7 @@ const ChaptersSlider = ({ chapters = [] }) => {
                     className="overflow-x-auto pb-12 hide-scrollbar flex gap-6 px-4 w-full"
                 >
                     {displayChapters.map((chapter) => (
-                        <div key={chapter.id} className="relative w-[280px] md:w-[300px] flex-shrink-0 h-[420px]">
+                        <div key={chapter.id} className="relative w-[280px] md:w-[300px] flex-shrink-0 h-[420px] hover:z-30 overflow-visible transition-all duration-300">
                             <Card className="h-full flex flex-col !p-6" title={null}>
                                 <Link to={`/chapter/${chapter.id}`} className="flex flex-col h-full group">
                                     {/* Book Cover / Image Area */}

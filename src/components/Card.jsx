@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Card = ({ title, children, className = '' }) => {
+const Card = ({ title, children, className = '', disableReveal = false }) => {
   const cardRef = useRef(null);
   const contentRef = useRef(null);
   const [ripples, setRipples] = useState([]);
@@ -12,22 +12,27 @@ const Card = ({ title, children, className = '' }) => {
   useEffect(() => {
     const card = cardRef.current;
 
-    // 1. Scroll Reveal Animation
-    gsap.fromTo(card,
-      { y: 50, opacity: 0, scale: 0.9 },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: card,
-          start: "top 85%",
-          toggleActions: "play none none reverse"
+    // 1. Scroll Reveal Animation (Conditional)
+    if (!disableReveal) {
+      gsap.fromTo(card,
+        { y: 50, opacity: 0, scale: 0.9 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            toggleActions: "play none none reverse"
+          }
         }
-      }
-    );
+      );
+    } else {
+      // Ensure visibility if animation is disabled
+      gsap.set(card, { y: 0, opacity: 1, scale: 1 });
+    }
 
     // 2. Parallax Micro-motion (Global Mouse Move)
     const handleGlobalMouseMove = (e) => {

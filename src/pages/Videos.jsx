@@ -36,10 +36,10 @@ const Videos = () => {
             <div className="max-w-6xl mx-auto px-6">
 
                 {/* Header */}
-                <div className="mb-16">
-                    <span className="text-xs font-bold tracking-widest text-[var(--primary-color)] uppercase mb-4 block">Visual Library</span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Videos & Tutorials</h1>
-                    <p className="text-xl text-gray-500 font-light max-w-2xl leading-relaxed">
+                <div className="section-header-wrapper">
+                    <span className="section-eyebrow">Visual Library</span>
+                    <h1 className="section-heading">Videos & Tutorials</h1>
+                    <p className="section-subtitle">
                         Verified educational content from trusted health sources.
                     </p>
                 </div>

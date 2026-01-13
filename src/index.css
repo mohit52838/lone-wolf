@@ -122,6 +122,27 @@ button:active,
   transform: scale(0.95);
 }
 
+/* Shared Section Headers */
+.section-header-wrapper {
+  @apply mb-16 text-center md:text-left;
+}
+
+.section-eyebrow {
+  @apply inline-block py-2 px-4 mb-4 text-sm font-bold tracking-wide rounded-full uppercase;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.section-heading {
+  @apply text-4xl md:text-5xl font-bold font-display leading-[1.1] mb-6;
+  color: var(--text-main);
+}
+
+.section-subtitle {
+  @apply text-xl font-light max-w-2xl leading-relaxed;
+  color: var(--text-muted);
+}
+
 /* Scrollbar - Reverted to default to avoid overflow issues */
 
 /* Strict Prose Overrides for Content Restoration */

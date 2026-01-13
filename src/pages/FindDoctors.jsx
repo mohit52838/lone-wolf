@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import MapComponent from '../components/MapComponent';
 import ResultCard from '../components/ResultCard';
 import { fetchNearbyHealthcare } from '../utils/overpassApi';
@@ -30,7 +31,26 @@ const FindDoctors = () => {
         Doctor: true
     });
 
+    const locationState = useLocation().state;
+
+    // Strict Filter Logic for Guidance Mode
+    useEffect(() => {
+        if (locationState?.source === 'guidance' && locationState?.careType) {
+            const type = locationState.careType;
+            console.log(`Activating Guidance Mode: ${type} only`);
+
+            // Auto-configure filters based on care type
+            setFilters({
+                Gynecologist: type === 'Gynecologist',
+                Hospital: type === 'Hospital',
+                Clinic: type === 'Clinic',
+                Doctor: type === 'General Doctor' || type === 'Doctor'
+            });
+        }
+    }, [locationState]);
+
     const DEFAULT_RADIUS = 5000;
+    const GUIDANCE_RADIUS = 50000; // 50km for Guidance Mode to ensure results
 
     // Robust Location Strategy: High Acc -> Low Acc -> Default
     useEffect(() => {
@@ -46,13 +66,17 @@ const FindDoctors = () => {
             setMapCenter(userLoc); // Center map on user
             setLoading(false); // Stop loading spinner
 
-            // Check if user has already typed a search while we were finding location
+            // Check if user has already typed a search
             const currentQuery = searchQueryRef.current;
             if (currentQuery && currentQuery.trim().length > 0) {
                 console.log("Preserving user search with new location:", currentQuery);
                 fetchFacilities(latitude, longitude, 20000, null, currentQuery);
             } else {
-                fetchFacilities(latitude, longitude, DEFAULT_RADIUS);
+                // Check if in Guidance Mode -> Use Larger Radius
+                const radius = (locationState?.source === 'guidance') ? GUIDANCE_RADIUS : DEFAULT_RADIUS;
+                console.log(`Fetching facilities with radius: ${radius}m (Guidance Mode: ${locationState?.source === 'guidance'})`);
+
+                fetchFacilities(latitude, longitude, radius);
             }
         };
 
@@ -65,10 +89,13 @@ const FindDoctors = () => {
             // Default: Pune
             const defaultLoc = [18.5204, 73.8567];
             setMapCenter(defaultLoc);
-            fetchFacilities(defaultLoc[0], defaultLoc[1], DEFAULT_RADIUS);
+
+            // Check if in Guidance Mode -> Use Larger Radius
+            const radius = (locationState?.source === 'guidance') ? GUIDANCE_RADIUS : DEFAULT_RADIUS;
+            fetchFacilities(defaultLoc[0], defaultLoc[1], radius);
         };
 
-        // Step 2: Low Accuracy (IP/Cell) - usually fast & "good enough" for city level
+        // Step 2: Low Accuracy (IP/Cell)
         const tryLowAccuracy = () => {
             console.log("Trying low accuracy location...");
             navigator.geolocation.getCurrentPosition(
@@ -77,12 +104,12 @@ const FindDoctors = () => {
                 {
                     enableHighAccuracy: false,
                     timeout: 8000,
-                    maximumAge: 300000 // 5 minutes cached is fine
+                    maximumAge: 300000
                 }
             );
         };
 
-        // Step 1: High Accuracy (GPS) - try this first
+        // Step 1: High Accuracy (GPS)
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => handleSuccess(pos, 'High Accuracy'),
@@ -92,7 +119,7 @@ const FindDoctors = () => {
                 },
                 {
                     enableHighAccuracy: true,
-                    timeout: 6000, // Give GPS 6s to warm up
+                    timeout: 6000,
                     maximumAge: 0
                 }
             );
@@ -101,9 +128,9 @@ const FindDoctors = () => {
         }
 
         return () => { isMounted = false; };
-    }, []);
+    }, [locationState]); // Added locationState dependency to re-trigger if state changes (though usually persists on nav)
 
-    // Manual "Locate Me" trigger with Fallback Strategy
+    // Manual "Locate Me" trigger
     const handleLocateMe = useCallback(() => {
         setLoading(true);
         setError(null);
@@ -114,15 +141,14 @@ const FindDoctors = () => {
             setLocation(userLoc);
             setMapCenter(userLoc);
             setError(null);
-            setLoading(false); // Ensure loading stops
-            setLoading(false); // Ensure loading stops
+            setLoading(false);
 
-            // Check if user has already typed a search
             const currentQuery = searchQueryRef.current;
             if (currentQuery && currentQuery.trim().length > 0) {
                 fetchFacilities(latitude, longitude, 20000, null, currentQuery);
             } else {
-                fetchFacilities(latitude, longitude, DEFAULT_RADIUS);
+                const radius = (locationState?.source === 'guidance') ? GUIDANCE_RADIUS : DEFAULT_RADIUS;
+                fetchFacilities(latitude, longitude, radius);
             }
         };
 
@@ -238,8 +264,22 @@ const FindDoctors = () => {
         return () => clearTimeout(timer);
     }, [searchQuery, handleSearchArea]);
 
+
+    // Distance helper (Haversine)
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+
     const filteredFacilities = useMemo(() => {
-        return facilities.filter(f => {
+        let results = facilities.filter(f => {
             if (f.type === 'Gynecologist' && !filters.Gynecologist) return false;
             if (f.type === 'Hospital' && !filters.Hospital) return false;
             if (f.type === 'Clinic' && !filters.Clinic) return false;
@@ -252,7 +292,21 @@ const FindDoctors = () => {
             }
             return true;
         });
-    }, [facilities, filters, searchQuery]);
+
+        // Strict Sorting for Guidance Mode: Nearest First
+        if (locationState?.source === 'guidance') {
+            const center = location || mapCenter; // Prefer user location, fallback to map center
+            if (center) {
+                results.sort((a, b) => {
+                    const distA = calculateDistance(center[0], center[1], a.lat, a.lon);
+                    const distB = calculateDistance(center[0], center[1], b.lat, b.lon);
+                    return distA - distB;
+                });
+            }
+        }
+
+        return results;
+    }, [facilities, filters, searchQuery, locationState, location, mapCenter]);
 
     return (
         <div className="min-h-screen pt-32 pb-10 px-4 sm:px-6 lg:px-8 font-sans h-screen flex flex-col">

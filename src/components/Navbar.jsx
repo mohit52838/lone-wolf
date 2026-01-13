@@ -55,6 +55,7 @@ const Navbar = () => {
         { name: 'Chapters', path: '/chapters', icon: FiBookOpen },
         { name: 'Videos', path: '/videos', icon: FiPlayCircle },
         { name: 'Resources', path: '/resources', icon: FiLayers },
+        { name: 'Guidance', path: '/guidance', icon: FiLayers },
         { name: 'Find Doctors', path: '/find-doctors', icon: FiHeart },
         { name: 'About', path: '/about', icon: FiInfo },
     ];

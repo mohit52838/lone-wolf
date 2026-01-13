@@ -13,13 +13,13 @@ const Chapters = () => {
 
     return (
         <div className="min-h-screen pt-32 pb-24">
-            <div className="max-w-5xl mx-auto px-6">
+            <div className="max-w-6xl mx-auto px-6">
 
                 {/* Header */}
-                <div className="mb-16 text-center md:text-left">
-                    <span className="text-xs font-bold tracking-widest text-[var(--primary-color)] uppercase mb-4 block">Knowledge Base</span>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Explore our guides</h1>
-                    <p className="text-xl text-gray-500 font-light max-w-2xl leading-relaxed">
+                <div className="section-header-wrapper">
+                    <span className="section-eyebrow">Knowledge Base</span>
+                    <h1 className="section-heading">Explore our guides</h1>
+                    <p className="section-subtitle">
                         Medically verified articles designed to help you understand your body better. Use the search below to find specific topics.
                     </p>
                 </div>

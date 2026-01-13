@@ -91,10 +91,16 @@ const Resources = () => {
                 </div>
             )}
 
-            <PageHeader
-                title="Resources & Support"
-                subtitle="Curated tools, contacts, and downloads to support your health journey."
-            />
+            {/* Standardized Header */}
+            <div className="max-w-6xl mx-auto px-6 pt-32">
+                <div className="section-header-wrapper">
+                    <span className="section-eyebrow">Support Tools</span>
+                    <h1 className="section-heading">Resources & Support</h1>
+                    <p className="section-subtitle">
+                        Curated tools, contacts, and downloads to support your health journey.
+                    </p>
+                </div>
+            </div>
 
             <div className="max-w-6xl mx-auto px-6">
 
