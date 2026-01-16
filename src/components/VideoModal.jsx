@@ -3,6 +3,8 @@ import { FaTimes } from 'react-icons/fa';
 
 const VideoModal = ({ video, onClose }) => {
     useEffect(() => {
+        if (!video) return;
+
         const handleEsc = (e) => {
             if (e.key === 'Escape') onClose();
         };
@@ -13,7 +15,7 @@ const VideoModal = ({ video, onClose }) => {
             window.removeEventListener('keydown', handleEsc);
             document.body.style.overflow = 'unset';
         };
-    }, [onClose]);
+    }, [video, onClose]);
 
     if (!video) return null;
 

@@ -1,0 +1,27 @@
+Found 4 duplicate IDs.
+
+ID: RFDatCchpus
+  1. Title: 'Female Reproductive System - Crash Course A&P #40'
+     Category: 'Menstrual Cycle & Menstrual Health'
+  2. Title: 'The Ovarian Cycle'
+     Category: 'PCOS & PCOD'
+  3. Title: 'The Ovarian Cycle'
+     Category: 'Menopause & Perimenopause'
+
+ID: cjbgZwgdY7Q
+  1. Title: 'Why do women have periods?'
+     Category: 'Menstrual Cycle & Menstrual Health'
+  2. Title: 'Why Do Women Have Periods?'
+     Category: 'PCOS & PCOD'
+
+ID: GoJsr4IwCm4
+  1. Title: 'The Art of Aging Well'
+     Category: 'Wellness'
+  2. Title: 'Why We Age - TED-Ed'
+     Category: 'Menopause & Perimenopause'
+
+ID: -SPRPkLoKp8
+  1. Title: 'How Do Your Hormones Work?'
+     Category: 'PCOS & PCOD'
+  2. Title: 'How Do Your Hormones Work?'
+     Category: 'Menopause & Perimenopause'

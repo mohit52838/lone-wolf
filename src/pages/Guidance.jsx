@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaHeartbeat, FaArrowRight, FaBookOpen, FaUserMd, FaHospital, FaStethoscope, FaClinicMedical } from 'react-icons/fa';
+import { FaHeartbeat, FaArrowRight, FaBookOpen, FaUserMd, FaHospital, FaStethoscope, FaClinicMedical, FaPlay, FaVideo } from 'react-icons/fa';
 import { chapters } from '../data/chapters';
+import videos from '../data/videos.json'; // DATA SOURCE
 import Card from '../components/Card';
+import VideoModal from '../components/VideoModal';
 
 // Richer Symptom List
 const SYMPTOMS = [
@@ -73,13 +75,43 @@ const SYMPTOM_MAP = {
     }
 };
 
+// Start: Video Mapping
+// Start: Video Mapping (Specific Video IDs)
+const SYMPTOM_VIDEO_MAP = {
+    "Missed period": ["eK7Gp6AWnuY", "cjbgZwgdY7Q", "n04NPtZI4QQ"], // Hormones, Why periods, Pregnancy
+    "Irregular cycle": ["nLmg4wSHdxQ", "VYSFNwTUkG0", "gpxwhUUHSiE"], // Ovulation, Ovarian Cycle, PCOS
+    "Pelvic pain": ["fKOFntVcBiw", "_lSO0kMBRow", "n4LzuZ9uXZc"], // Fibroids, Endo, Pain Mgmt
+    "Heavy bleeding": ["fKOFntVcBiw", "ayzN5f3qN8g", "_lSO0kMBRow"], // Fibroids, Menstruation works, Endo
+    "Unusual discharge": ["ije-4wDhen4", "2f7YwCtHcgk"], // UTIs, Repro System
+    "Severe cramps": ["_lSO0kMBRow", "n4LzuZ9uXZc", "RFDatCchpus"], // Endo, Pain Mgmt, Crash Course
+    "Mood changes": ["L9xMuXV2vJQ", "ogvbNLLL4WQ", "-SPRPkLoKp8"], // Mental Health, MH Important, Hormones
+    "Painful intercourse": ["_lSO0kMBRow", "fKOFntVcBiw"], // Endo, Fibroids
+    "Breast tenderness": ["eWHH9je2zG4", "RFDatCchpus"], // Endocrine, Repro System
+    "Fatigue": ["nrlqMBQ44JQ", "GoJsr4IwCm4"], // Nutrition, Aging Well
+    "Acne / Hair growth": ["QnyS26pGnsc", "zIT6Vs1rUGc", "gpxwhUUHSiE"], // What is PCOS, Adolescents, Strategies
+    "Fever + Pelvic pain": ["ije-4wDhen4", "Du1dnKppn-s"] // UTIs, HPV
+};
+// End: Video Mapping
+
 const Guidance = () => {
     const navigate = useNavigate();
     const [selectedSymptoms, setSelectedSymptoms] = useState(new Set());
     const [showResults, setShowResults] = useState(false);
     const [recommendedChapters, setRecommendedChapters] = useState([]);
+    const [recommendedVideos, setRecommendedVideos] = useState([]); // New State
     const [recommendedCare, setRecommendedCare] = useState(new Set());
+    const [selectedVideo, setSelectedVideo] = useState(null); // For Modal
     const resultsRef = useRef(null);
+
+    // Scroll effect when results are shown
+    React.useEffect(() => {
+        if (showResults && resultsRef.current) {
+            // Small delay to ensure layout is complete
+            setTimeout(() => {
+                resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }, [showResults, recommendedVideos]);
 
     const toggleSymptom = (symptom) => {
         const newSelection = new Set(selectedSymptoms);
@@ -97,30 +129,51 @@ const Guidance = () => {
 
         const chapterIds = new Set();
         const careTypes = new Set();
+        const videoIds = new Set(); // Changed from videoCategories
 
         selectedSymptoms.forEach(symptom => {
+            // Existing logic
             const data = SYMPTOM_MAP[symptom];
             if (data) {
-                // Collect Chapters
                 data.chapters.forEach(id => chapterIds.add(id));
-                // Collect Care Types
                 data.care.forEach(type => careTypes.add(type));
+            }
+
+            // New Video Logic (Specific IDs)
+            const vIds = SYMPTOM_VIDEO_MAP[symptom];
+            if (vIds) {
+                vIds.forEach(id => videoIds.add(id));
             }
         });
 
-        // Filter chapters data to get details
+        // Filter chapters
         const results = chapters
             .filter(ch => chapterIds.has(ch.id))
-            .slice(0, 4); // Show top 4 unique matches (increased from 3)
+            .slice(0, 4);
 
         setRecommendedChapters(results);
         setRecommendedCare(careTypes);
-        setShowResults(true);
 
-        // Smooth scroll to results
-        setTimeout(() => {
-            resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        // VIDEO FILTERING LOGIC
+        // 1. Filter by Specific IDs found in map
+        let filteredVideos = videos.filter(v => videoIds.has(v.id));
+
+        // Simple duration parser to sort by seconds (MM:SS)
+        const parseDuration = (dur) => {
+            const parts = dur.split(':').map(Number);
+            if (parts.length === 2) return parts[0] * 60 + parts[1]; // MM:SS
+            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2]; // HH:MM:SS
+            return 99999;
+        };
+
+        // Sort by duration so short videos appear first among the relevant ones
+        filteredVideos.sort((a, b) => parseDuration(a.duration) - parseDuration(b.duration));
+
+        // Take top 3
+        setRecommendedVideos(filteredVideos.slice(0, 3));
+
+
+        setShowResults(true);
     };
 
     const handleExploreCare = (type) => {
@@ -231,39 +284,94 @@ const Guidance = () => {
                     </div>
 
                     <div className="grid lg:grid-cols-2 gap-10">
-                        {/* Suggested Reading */}
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                                    <FaBookOpen size={20} />
+                        {/* LEFT COLUMN */}
+                        <div className="space-y-10"> {/* Combined Reading & Videos in one col if you want, but sticking to logic */}
+
+                            {/* Suggested Reading */}
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                        <FaBookOpen size={20} />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-[var(--text-main)] font-display">Suggested Reading</h3>
                                 </div>
-                                <h3 className="text-2xl font-bold text-[var(--text-main)] font-display">Suggested Reading</h3>
+
+                                {recommendedChapters.length > 0 ? (
+                                    <div className="space-y-4">
+                                        {recommendedChapters.map(chapter => (
+                                            <Card key={chapter.id} className="!p-5 cursor-pointer group" onClick={() => navigate(`/chapter/${chapter.id}`)} title={null} disableReveal={true}>
+                                                <div className="flex gap-4 items-start text-left">
+                                                    <div className="flex-1">
+                                                        <h4 className="font-bold text-[var(--text-main)] group-hover:text-[#e6007e] transition-colors mb-1 font-display">
+                                                            {chapter.title}
+                                                        </h4>
+                                                        <p className="text-sm text-[var(--text-muted)] line-clamp-2">
+                                                            {chapter.description}
+                                                        </p>
+                                                    </div>
+                                                    <FaArrowRight className="text-gray-300 group-hover:text-[#e6007e] transition-colors mt-1" size={14} />
+                                                </div>
+                                            </Card>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-[var(--text-muted)]">No specific chapters found for this selection, but all our resources are available in the Library.</p>
+                                )}
                             </div>
 
-                            {recommendedChapters.length > 0 ? (
-                                <div className="space-y-4">
-                                    {recommendedChapters.map(chapter => (
-                                        <Card key={chapter.id} className="!p-5 cursor-pointer group" onClick={() => navigate(`/chapter/${chapter.id}`)} title={null} disableReveal={true}>
-                                            <div className="flex gap-4 items-start text-left">
-                                                <div className="flex-1">
-                                                    <h4 className="font-bold text-[var(--text-main)] group-hover:text-[#e6007e] transition-colors mb-1 font-display">
-                                                        {chapter.title}
-                                                    </h4>
-                                                    <p className="text-sm text-[var(--text-muted)] line-clamp-2">
-                                                        {chapter.description}
-                                                    </p>
+                            {/* Suggested Videos - NEW SECTION */}
+                            {recommendedVideos.length > 0 && (
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                                            <FaVideo size={20} />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-[var(--text-main)] font-display">Suggested Videos</h3>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {recommendedVideos.map(video => (
+                                            <Card
+                                                key={video.id}
+                                                className="!p-4 cursor-pointer group"
+                                                onClick={() => setSelectedVideo(video)}
+                                                title={null}
+                                                disableReveal={true}
+                                            >
+                                                <div className="flex gap-4 items-center">
+                                                    {/* Compact Thumbnail */}
+                                                    <div className="relative w-24 h-16 bg-gray-200 rounded-lg overflow-hidden shrink-0">
+                                                        <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+                                                            <div className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center pl-0.5 shadow-sm">
+                                                                <FaPlay className="text-[#e6007e] text-[10px]" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Info */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="font-bold text-sm text-[var(--text-main)] group-hover:text-[#e6007e] transition-colors line-clamp-1 mb-1">
+                                                            {video.title}
+                                                        </h4>
+                                                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                                                            <span className="font-medium truncate max-w-[120px]">{video.source}</span>
+                                                            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                                            <span>{video.duration}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <FaArrowRight className="text-gray-300 group-hover:text-[#e6007e] transition-colors shrink-0" size={14} />
                                                 </div>
-                                                <FaArrowRight className="text-gray-300 group-hover:text-[#e6007e] transition-colors mt-1" size={14} />
-                                            </div>
-                                        </Card>
-                                    ))}
+                                            </Card>
+                                        ))}
+                                    </div>
                                 </div>
-                            ) : (
-                                <p className="text-[var(--text-muted)]">No specific chapters found for this selection, but all our resources are available in the Library.</p>
                             )}
+
                         </div>
 
-                        {/* Care Options */}
+                        {/* RIGHT COLUMN - Care Options */}
                         <div className="space-y-6">
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="p-2 bg-rose-50 text-[#e6007e] rounded-lg">
@@ -308,6 +416,12 @@ const Guidance = () => {
 
                 </div>
             )}
+
+            {/* Video Modal */}
+            <VideoModal
+                video={selectedVideo}
+                onClose={() => setSelectedVideo(null)}
+            />
 
         </div>
     );

@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Card = ({ title, children, className = '', disableReveal = false }) => {
+const Card = ({ title, children, className = '', disableReveal = false, onClick, ...props }) => {
   const cardRef = useRef(null);
   const contentRef = useRef(null);
   const [ripples, setRipples] = useState([]);
@@ -88,8 +88,9 @@ const Card = ({ title, children, className = '', disableReveal = false }) => {
     };
   }, []);
 
-  // 4. Ripple Effect
-  const createRipple = (e) => {
+  // 4. Ripple Effect & Click Handling
+  const handleClick = (e) => {
+    // Create Ripple
     const card = cardRef.current;
     const rect = card.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
@@ -104,6 +105,11 @@ const Card = ({ title, children, className = '', disableReveal = false }) => {
     };
 
     setRipples((prev) => [...prev, newRipple]);
+
+    // Call external onClick if exists
+    if (onClick) {
+      onClick(e);
+    }
   };
 
   // Remove ripple after animation
@@ -120,7 +126,8 @@ const Card = ({ title, children, className = '', disableReveal = false }) => {
     <div
       ref={cardRef}
       className={`holo-card ${className}`}
-      onClick={createRipple}
+      onClick={handleClick}
+      {...props}
     >
       <div ref={contentRef} className="card-content">
         {title && <h3 className="card-title">{title}</h3>}
