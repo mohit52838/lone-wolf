@@ -9,7 +9,8 @@ import {
     FiHeart,
     FiInfo,
     FiMenu,
-    FiX
+    FiX,
+    FiMic
 } from 'react-icons/fi';
 
 const Navbar = () => {
@@ -54,6 +55,7 @@ const Navbar = () => {
         { name: 'Home', path: '/', icon: FiHome },
         { name: 'Chapters', path: '/chapters', icon: FiBookOpen },
         { name: 'Videos', path: '/videos', icon: FiPlayCircle },
+        { name: 'Expert Talks', path: '/expert-talks', icon: FiMic },
         { name: 'Resources', path: '/resources', icon: FiLayers },
         { name: 'Guidance', path: '/guidance', icon: FiLayers },
         { name: 'Find Doctors', path: '/find-doctors', icon: FiHeart },
@@ -153,12 +155,25 @@ const Navbar = () => {
 
                 .navbar.scrolled {
                     top: 10px;
-                    padding: 0.6rem 2rem;
-                    background: rgba(255, 255, 255, 0.85);
+                    padding: 0.5rem 1.75rem;
+                    background: rgba(255, 255, 255, 0.95);
                     backdrop-filter: blur(20px);
-                    box-shadow: 0 15px 35px -5px rgba(255, 122, 162, 0.2);
+                    box-shadow: 0 10px 30px -5px rgba(255, 122, 162, 0.15);
                     width: 90%;
                     max-width: 1000px;
+                }
+                
+                .navbar.scrolled .nav-link {
+                    font-size: 0.85rem;
+                    padding: 0.4rem 0.8rem;
+                }
+                
+                .navbar.scrolled .logo-text {
+                    font-size: 1.25rem;
+                }
+                
+                .navbar.scrolled .logo-emoji {
+                    font-size: 1.4rem;
                 }
 
                 /* Spotlight Effect */

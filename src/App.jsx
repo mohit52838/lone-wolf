@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 import ChapterPage from './pages/ChapterPage';
 import FindDoctors from './pages/FindDoctors';
 import Guidance from './pages/Guidance';
+import ExpertTalks from './pages/ExpertTalks';
 
 let hasHandledReload = false;
 
@@ -46,6 +47,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/find-doctors" element={<FindDoctors />} />
           <Route path="/guidance" element={<Guidance />} />
+          <Route path="/expert-talks" element={<ExpertTalks />} />
           <Route path="/videos" element={<Videos />} />
         </Routes>
       </main>
