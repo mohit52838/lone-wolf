@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { LibraryProvider } from './context/LibraryContext';
 import ScrollToTop from './components/ScrollToTop';
 
 // Components
@@ -14,6 +15,8 @@ import ChapterPage from './pages/ChapterPage';
 import FindDoctors from './pages/FindDoctors';
 import Guidance from './pages/Guidance';
 import ExpertTalks from './pages/ExpertTalks';
+import OurSources from './pages/OurSources';
+import Library from './pages/Library';
 
 let hasHandledReload = false;
 
@@ -33,26 +36,30 @@ function App() {
   }, [navigate]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <ScrollToTop />
+    <LibraryProvider>
+      <div className="flex flex-col min-h-screen">
+        <ScrollToTop />
 
-      <Navbar />
+        <Navbar />
 
-      <main className={`flex-grow ${!isHomePage ? '' : ''}`}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/chapters" element={<Chapters />} />
-          <Route path="/chapter/:id" element={<ChapterPage />} />
-          <Route path="/resources" element={<Resources />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/find-doctors" element={<FindDoctors />} />
-          <Route path="/guidance" element={<Guidance />} />
-          <Route path="/expert-talks" element={<ExpertTalks />} />
-          <Route path="/videos" element={<Videos />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
+        <main className={`flex-grow ${!isHomePage ? '' : ''}`}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/chapters" element={<Chapters />} />
+            <Route path="/chapter/:id" element={<ChapterPage />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/find-doctors" element={<FindDoctors />} />
+            <Route path="/guidance" element={<Guidance />} />
+            <Route path="/expert-talks" element={<ExpertTalks />} />
+            <Route path="/videos" element={<Videos />} />
+            <Route path="/sources" element={<OurSources />} />
+            <Route path="/library" element={<Library />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </LibraryProvider>
   );
 }
 

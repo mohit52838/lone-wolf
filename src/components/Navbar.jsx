@@ -10,7 +10,10 @@ import {
     FiInfo,
     FiMenu,
     FiX,
-    FiMic
+    FiMic,
+    FiCheckCircle,
+    FiChevronDown,
+    FiBookmark
 } from 'react-icons/fi';
 
 const Navbar = () => {
@@ -19,6 +22,7 @@ const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const location = useLocation();
     const [hoveredLink, setHoveredLink] = useState(null);
+    const [isMoreOpen, setIsMoreOpen] = useState(false);
 
     // GSAP Entrance & Scroll Listener
     useEffect(() => {
@@ -51,18 +55,24 @@ const Navbar = () => {
         navRef.current.style.setProperty('--mouse-y', `${y}px`);
     };
 
-    const navLinks = [
+    const primaryLinks = [
         { name: 'Home', path: '/', icon: FiHome },
         { name: 'Chapters', path: '/chapters', icon: FiBookOpen },
         { name: 'Videos', path: '/videos', icon: FiPlayCircle },
         { name: 'Expert Talks', path: '/expert-talks', icon: FiMic },
-        { name: 'Resources', path: '/resources', icon: FiLayers },
         { name: 'Guidance', path: '/guidance', icon: FiLayers },
         { name: 'Find Doctors', path: '/find-doctors', icon: FiHeart },
+    ];
+
+    const secondaryLinks = [
+        { name: 'Your Library', path: '/library', icon: FiBookmark },
+        { name: 'Resources', path: '/resources', icon: FiLayers },
+        { name: 'Our Sources', path: '/sources', icon: FiCheckCircle },
         { name: 'About', path: '/about', icon: FiInfo },
     ];
 
     const isActive = (path) => location.pathname === path;
+    const isMoreActive = secondaryLinks.some(link => isActive(link.path));
 
     return (
         <nav
@@ -81,8 +91,8 @@ const Navbar = () => {
             </div>
 
             {/* Desktop Links */}
-            <ul className="nav-links hidden md:flex">
-                {navLinks.map((link) => (
+            <ul className="nav-links hidden md:flex items-center">
+                {primaryLinks.map((link) => (
                     <li key={link.name} className="nav-item">
                         <Link
                             to={link.path}
@@ -104,6 +114,44 @@ const Navbar = () => {
                         </Link>
                     </li>
                 ))}
+
+                {/* More Dropdown */}
+                <li
+                    className="nav-item relative"
+                    onMouseEnter={() => setIsMoreOpen(true)}
+                    onMouseLeave={() => setIsMoreOpen(false)}
+                >
+                    <button
+                        className={`nav-link ${isMoreActive ? 'active' : ''} flex items-center gap-1`}
+                    >
+                        <span className="relative z-10 flex flex-col items-center">
+                            More
+                            {/* Active Dot for Parent - positioned relative to text */}
+                            {isMoreActive && (
+                                <span className="active-dot" style={{ bottom: '-6px' }} />
+                            )}
+                        </span>
+                        <FiChevronDown className={`transition-transform duration-300 ${isMoreOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    <div
+                        className={`absolute top-full right-0 pt-4 w-48 transition-all duration-300 transform origin-top-right ${isMoreOpen ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}`}
+                    >
+                        <div className="bg-white/90 backdrop-blur-xl border border-white/50 rounded-2xl p-2 shadow-xl flex flex-col gap-1">
+                            {secondaryLinks.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    to={link.path}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${isActive(link.path) ? 'bg-pink-50 text-[var(--primary-pink)]' : 'text-slate-600 hover:bg-slate-50 hover:text-[var(--primary-pink)]'}`}
+                                >
+                                    <link.icon />
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </li>
             </ul>
 
             {/* Mobile Toggle */}
@@ -117,7 +165,7 @@ const Navbar = () => {
             {/* Mobile Menu */}
             {isOpen && (
                 <div className="mobile-menu md:hidden">
-                    {navLinks.map((link) => (
+                    {[...primaryLinks, ...secondaryLinks].map((link) => (
                         <Link
                             key={link.name}
                             to={link.path}
@@ -138,8 +186,8 @@ const Navbar = () => {
                     left: 50%;
                     transform: translateX(-50%);
                     width: 95%;
-                    max-width: 1200px;
-                    padding: 1rem 2.5rem;
+                    max-width: 1250px;
+                    padding: 0.8rem 2rem;
                     background: rgba(255, 255, 255, 0.6);
                     backdrop-filter: blur(12px);
                     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -150,30 +198,30 @@ const Navbar = () => {
                     z-index: 1000;
                     box-shadow: 0 10px 30px -10px rgba(255, 122, 162, 0.1);
                     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-                    overflow: hidden;
+                    /* overflow: hidden; Removed to allow dropdown overflow */
                 }
 
                 .navbar.scrolled {
                     top: 10px;
-                    padding: 0.5rem 1.75rem;
+                    padding: 0.6rem 2rem;
                     background: rgba(255, 255, 255, 0.95);
                     backdrop-filter: blur(20px);
                     box-shadow: 0 10px 30px -5px rgba(255, 122, 162, 0.15);
-                    width: 90%;
-                    max-width: 1000px;
+                    width: 92%;
+                    max-width: 1200px;
                 }
                 
                 .navbar.scrolled .nav-link {
-                    font-size: 0.85rem;
-                    padding: 0.4rem 0.8rem;
+                    font-size: 0.9rem;
+                    padding: 0.5rem 1rem;
                 }
                 
                 .navbar.scrolled .logo-text {
-                    font-size: 1.25rem;
+                    font-size: 1.35rem;
                 }
                 
                 .navbar.scrolled .logo-emoji {
-                    font-size: 1.4rem;
+                    font-size: 1.5rem;
                 }
 
                 /* Spotlight Effect */
@@ -186,7 +234,8 @@ const Navbar = () => {
                         transparent 40%
                     );
                     pointer-events: none;
-                    z-index: 0;
+                    z-index: -1; /* Moved behind content */
+                    border-radius: 50px;
                 }
 
                 .logo-link {
@@ -220,8 +269,8 @@ const Navbar = () => {
                 }
 
                 .nav-links {
-                    display: flex;
-                    gap: 0.5rem;
+                    /* display: flex; handled by tailwind classes */
+                    gap: 1.5rem;
                     list-style: none;
                     margin: 0;
                     padding: 0;
@@ -240,12 +289,15 @@ const Navbar = () => {
                     font-size: 0.95rem;
                     font-weight: 600;
                     position: relative;
-                    padding: 0.6rem 1.2rem;
+                    padding: 0.6rem 1.0rem;
                     border-radius: 30px;
                     transition: all 0.3s ease;
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    background: transparent;
+                    border: none;
+                    cursor: pointer;
                 }
 
                 .nav-link:hover {
@@ -339,12 +391,7 @@ const Navbar = () => {
                     opacity: 0;
                 }
                 
-                .mobile-link:nth-child(1) { animation-delay: 0.1s; }
-                .mobile-link:nth-child(2) { animation-delay: 0.15s; }
-                .mobile-link:nth-child(3) { animation-delay: 0.2s; }
-                .mobile-link:nth-child(4) { animation-delay: 0.25s; }
-                .mobile-link:nth-child(5) { animation-delay: 0.3s; }
-                .mobile-link:nth-child(6) { animation-delay: 0.35s; }
+                .mobile-link:nth-child(n) { animation-delay: 0.1s; }
 
                 @keyframes fadeIn {
                     to { opacity: 1; }

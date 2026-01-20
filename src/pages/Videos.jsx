@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import VideoGrid from '../components/VideoGrid';
 import VideoModal from '../components/VideoModal';
 import videosData from '../data/videos.json';
+import { useLibrary } from '../context/LibraryContext';
 
 const Videos = () => {
     const [videos, setVideos] = useState([]);
@@ -9,6 +10,9 @@ const Videos = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentVideo, setCurrentVideo] = useState(null);
     const [categories, setCategories] = useState([]);
+
+    // Library Integration
+    const { library, toggleSave, isSaved } = useLibrary();
 
     useEffect(() => {
         setVideos(videosData);
@@ -30,6 +34,17 @@ const Videos = () => {
             return true;
         });
     }, [videos, selectedCategory, searchQuery]);
+
+    // Handle Save/Unsave
+    const handleToggleSave = (videoId) => {
+        const video = videos.find(v => v.id === videoId);
+        if (video) {
+            toggleSave({ ...video, type: 'video' });
+        }
+    };
+
+    // Get list of saved IDs for UI state
+    const savedIds = library.videos ? library.videos.map(v => v.id) : [];
 
     return (
         <div className="min-h-screen pt-32 pb-24">
@@ -77,8 +92,8 @@ const Videos = () => {
                     <VideoGrid
                         videos={filteredVideos}
                         onPlay={setCurrentVideo}
-                        savedIds={[]}
-                        onToggleSave={() => { }}
+                        savedIds={savedIds}
+                        onToggleSave={handleToggleSave}
                     />
                 </div>
 

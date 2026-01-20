@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import VideoGrid from '../components/VideoGrid';
 import VideoModal from '../components/VideoModal';
 import expertTalksData from '../data/expertTalks.json';
+import { useLibrary } from '../context/LibraryContext';
 
 const ExpertTalks = () => {
+    const { library, toggleSave } = useLibrary();
     const [videos, setVideos] = useState([]);
     const [activeMode, setActiveMode] = useState('All'); // 'All' | 'Podcasts' | 'Expert Conversations'
     const [selectedCategory, setSelectedCategory] = useState('All');
@@ -133,8 +135,13 @@ const ExpertTalks = () => {
                         <VideoGrid
                             videos={filteredVideos}
                             onPlay={setCurrentVideo}
-                            savedIds={[]}
-                            onToggleSave={() => { }}
+                            savedIds={library.expertTalks ? library.expertTalks.map(v => v.id) : []}
+                            onToggleSave={(videoId) => {
+                                const video = videos.find(v => v.id === videoId);
+                                if (video) {
+                                    toggleSave({ ...video, type: 'expertTalk' });
+                                }
+                            }}
                         />
                     ) : (
                         <div className="text-center py-20 text-gray-500">
