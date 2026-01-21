@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaChevronDown, FaChevronUp, FaUserMd, FaHospital, FaClinicMedical } from 'react-icons/fa';
 
 const MapLegend = () => {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(window.innerWidth > 768);
 
     const items = [
         { label: 'Gynecologist', icon: <FaUserMd />, color: 'bg-pink-100 text-[#e6007e]' },

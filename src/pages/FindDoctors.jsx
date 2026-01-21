@@ -402,7 +402,7 @@ const FindDoctors = () => {
                 </div>
 
                 {/* Right Column: Map Only (Restored Height) */}
-                <div className="w-full md:w-[65%] lg:w-[70%] relative z-10 order-1 md:order-2 h-[400px] md:h-full bg-gray-100 rounded-3xl overflow-hidden shadow-inner border border-gray-200">
+                <div className="w-full md:w-[65%] lg:w-[70%] relative z-10 order-1 md:order-2 h-[550px] md:h-full bg-gray-100 rounded-3xl overflow-hidden shadow-inner border border-gray-200">
                     {error && error.includes("default") && (
                         <div className="absolute top-0 left-0 right-0 bg-yellow-100 text-yellow-800 text-xs px-4 py-2 text-center z-[500] border-b border-yellow-200">
                             <strong>Note:</strong> We couldn't find your precise location. Showing default area (Pune). Click the location arrow to try again.
