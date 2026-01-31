@@ -72,8 +72,8 @@ const Library = () => {
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === tab
-                                    ? 'bg-white text-[#e6007e] shadow-sm ring-1 ring-gray-200'
-                                    : 'text-gray-500 hover:text-gray-900'
+                                ? 'bg-white text-[#e6007e] shadow-sm ring-1 ring-gray-200'
+                                : 'text-gray-500 hover:text-gray-900'
                                 }`}
                         >
                             {tab}
@@ -145,9 +145,6 @@ const Library = () => {
                                             For now, let's render a visually complete card.
                                         */}}>
                                             <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
-                                            <div className="absolute top-2 right-2 bg-black/60 text-white px-1.5 py-0.5 rounded text-[10px] font-bold">
-                                                {item.duration}
-                                            </div>
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/10 transition-colors">
                                                 {/* We can't easily play from here without the Modal state from generic pages. 
                                                      For this iteration, we will simply allow removing. 

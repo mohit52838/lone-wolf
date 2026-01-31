@@ -27,10 +27,12 @@ const VideoCard = ({ video, onPlay, isSaved, onToggleSave }) => {
                     </div>
                 </div>
 
-                {/* Duration Badge */}
-                <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] font-medium px-1.5 py-0.5 rounded">
-                    {video.duration}
-                </div>
+                {/* Duration Badge - STRICT RENDERING */}
+                {video.duration && video.duration.length > 0 && (
+                    <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] font-medium px-1.5 py-0.5 rounded">
+                        {video.duration}
+                    </div>
+                )}
             </div>
 
             {/* Content */}

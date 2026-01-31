@@ -158,17 +158,6 @@ const Guidance = () => {
         // 1. Filter by Specific IDs found in map
         let filteredVideos = videos.filter(v => videoIds.has(v.id));
 
-        // Simple duration parser to sort by seconds (MM:SS)
-        const parseDuration = (dur) => {
-            const parts = dur.split(':').map(Number);
-            if (parts.length === 2) return parts[0] * 60 + parts[1]; // MM:SS
-            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2]; // HH:MM:SS
-            return 99999;
-        };
-
-        // Sort by duration so short videos appear first among the relevant ones
-        filteredVideos.sort((a, b) => parseDuration(a.duration) - parseDuration(b.duration));
-
         // Take top 3
         setRecommendedVideos(filteredVideos.slice(0, 3));
 
@@ -356,8 +345,6 @@ const Guidance = () => {
                                                         </h4>
                                                         <div className="flex items-center gap-2 text-xs text-gray-500">
                                                             <span className="font-medium truncate max-w-[120px]">{video.source}</span>
-                                                            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                                                            <span>{video.duration}</span>
                                                         </div>
                                                     </div>
 
