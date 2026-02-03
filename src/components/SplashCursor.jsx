@@ -889,23 +889,11 @@ function SplashCursor({
         }
 
         function generateColor() {
-            const rand = Math.random();
-            if (rand < 0.33) {
-                // Dark Grey/Charcoal
-                let gray = 0.02 + Math.random() * 0.05;
-                return { r: gray, g: gray, b: gray };
-            } else if (rand < 0.66) {
-                // Dark Brown/Earth tones
-                let v = 0.03 + Math.random() * 0.04;
-                return { r: v * 1.5, g: v * 0.9, b: v * 0.6 };
-            } else {
-                // Near Black/Deep Shadow
-                return {
-                    r: 0.01 + Math.random() * 0.02,
-                    g: 0.01 + Math.random() * 0.02,
-                    b: 0.01 + Math.random() * 0.02
-                };
-            }
+            let c = HSVtoRGB(Math.random(), 1.0, 1.0);
+            c.r *= 0.15;
+            c.g *= 0.15;
+            c.b *= 0.15;
+            return c;
         }
 
         function HSVtoRGB(h, s, v) {
