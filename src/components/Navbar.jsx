@@ -201,12 +201,17 @@ const Navbar = () => {
                     /* overflow: hidden; Removed to allow dropdown overflow */
                 }
 
+                .navbar:hover {
+                    border-color: var(--primary-pink);
+                    box-shadow: 0 0 25px rgba(255, 122, 162, 0.25);
+                }
+
                 .navbar.scrolled {
                     top: 10px;
-                    padding: 0.6rem 2rem;
+                    padding: 0.6rem 3rem;
                     background: rgba(255, 255, 255, 0.95);
                     backdrop-filter: blur(20px);
-                    box-shadow: 0 10px 30px -5px rgba(255, 122, 162, 0.15);
+                    box-shadow: 0 10px 40px -10px rgba(255, 122, 162, 0.2);
                     width: 92%;
                     max-width: 1200px;
                 }
@@ -236,6 +241,15 @@ const Navbar = () => {
                     pointer-events: none;
                     z-index: -1; /* Moved behind content */
                     border-radius: 50px;
+                }
+
+                .logo-container {
+                    margin-right: 3rem; /* Extra space before nav links */
+                    transition: all 0.4s ease;
+                }
+
+                .navbar.scrolled .logo-container {
+                    margin-right: 3.5rem; /* Balanced space on scroll */
                 }
 
                 .logo-link {
@@ -270,12 +284,13 @@ const Navbar = () => {
 
                 .nav-links {
                     /* display: flex; handled by tailwind classes */
-                    gap: 1.5rem;
+                    gap: 1.8rem;
                     list-style: none;
                     margin: 0;
                     padding: 0;
                     position: relative;
                     z-index: 10;
+                    white-space: nowrap; /* Prevent collapse/wrap */
                 }
 
                 .nav-item {
@@ -298,6 +313,7 @@ const Navbar = () => {
                     background: transparent;
                     border: none;
                     cursor: pointer;
+                    white-space: nowrap;
                 }
 
                 .nav-link:hover {

@@ -5,6 +5,7 @@ import ScrollToTop from './components/ScrollToTop';
 
 // Components
 import Navbar from './components/Navbar';
+import SplashCursor from './components/SplashCursor';
 import Home from './pages/Home';
 import Chapters from './pages/Chapters';
 import Videos from './pages/Videos';
@@ -38,6 +39,7 @@ function App() {
   return (
     <LibraryProvider>
       <div className="flex flex-col min-h-screen">
+        <SplashCursor />
         <ScrollToTop />
 
         <Navbar />
