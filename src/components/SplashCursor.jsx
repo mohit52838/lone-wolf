@@ -2,11 +2,11 @@
 import { useEffect, useRef } from 'react';
 
 function SplashCursor({
-    SIM_RESOLUTION = 256,
-    DYE_RESOLUTION = 1024,
+    SIM_RESOLUTION = 128,
+    DYE_RESOLUTION = 1440,
     CAPTURE_RESOLUTION = 512,
-    DENSITY_DISSIPATION = 2.5,
-    VELOCITY_DISSIPATION = 1.5,
+    DENSITY_DISSIPATION = 3.5,
+    VELOCITY_DISSIPATION = 2,
     PRESSURE = 0.1,
     PRESSURE_ITERATIONS = 20,
     CURL = 3,
@@ -315,8 +315,8 @@ function SplashCursor({
               c *= diffuse;
           #endif
 
-          float a = smoothstep(0.0, 0.05, max(c.r, max(c.g, c.b)));
-          gl_FragColor = vec4(linearToGamma(c), a);
+          float a = max(c.r, max(c.g, c.b));
+          gl_FragColor = vec4(c, a);
       }
     `;
 
@@ -890,20 +890,20 @@ function SplashCursor({
 
         function generateColor() {
             const rand = Math.random();
-            if (rand < 0.4) {
-                // Deep Charcoal/Black
-                let gray = 0.01 + Math.random() * 0.03;
+            if (rand < 0.33) {
+                // Dark Grey/Charcoal
+                let gray = 0.02 + Math.random() * 0.05;
                 return { r: gray, g: gray, b: gray };
-            } else if (rand < 0.7) {
-                // Dark Earthy Brown (Tuned to be less peach)
-                let v = 0.02 + Math.random() * 0.03;
-                return { r: v * 1.8, g: v * 0.8, b: v * 0.4 };
+            } else if (rand < 0.66) {
+                // Dark Brown/Earth tones
+                let v = 0.03 + Math.random() * 0.04;
+                return { r: v * 1.5, g: v * 0.9, b: v * 0.6 };
             } else {
-                // Deep Midnight Shadow
+                // Near Black/Deep Shadow
                 return {
-                    r: 0.005 + Math.random() * 0.01,
-                    g: 0.005 + Math.random() * 0.01,
-                    b: 0.01 + Math.random() * 0.015
+                    r: 0.01 + Math.random() * 0.02,
+                    g: 0.01 + Math.random() * 0.02,
+                    b: 0.01 + Math.random() * 0.02
                 };
             }
         }
